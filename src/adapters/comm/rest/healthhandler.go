@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"net/http"
@@ -24,10 +24,10 @@ func (ctx *APIContext) Live(rw http.ResponseWriter, r *http.Request) {
 //	404: errorResponse
 
 // Ready handles GET requests
-func (ctx *DBContext) Ready(rw http.ResponseWriter, r *http.Request) {
-	err := data.GetHealth(ctx.MongoClient, ctx.DatabaseName)
-	if err != nil {
-		log.Error().Err(err).Msg("Error connecting to database")
+func (ctx *APIContext) Ready(rw http.ResponseWriter, r *http.Request) {
+	status := ctx.dbContext.CheckConnection()
+	if status == false {
+		log.Error().Msg("Error connecting to database")
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}

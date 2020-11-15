@@ -1,6 +1,6 @@
-// Package classification of Details API
+// Service classification of Toggler API
 //
-// Documentation for Details API
+// Documentation for Toggler API
 //
 //	Schemes: http
 //	BasePath: /
@@ -13,10 +13,12 @@
 //	- application/json
 //
 // swagger:meta
-package http
+
+package rest
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
+	middleware "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
 )
 
 //
@@ -41,23 +43,23 @@ type errorResponseWrapper struct {
 type errorValidationWrapper struct {
 	// Collection of the errors
 	// in: body
-	Body ValidationError
+	Body middleware.ValidationError
 }
 
-// A list of products
-// swagger:response ProductsResponse
-type productsResponseWrapper struct {
+// A list of users
+// swagger:response UsersResponse
+type usersResponseWrapper struct {
 	// All current products
 	// in: body
-	Body []data.Product
+	Body []dto.User
 }
 
-// Data structure representing a single product
-// swagger:response ProductResponse
-type productResponseWrapper struct {
-	// Newly created product
+// Data structure representing a single user
+// swagger:response UserResponse
+type userResponseWrapper struct {
+	// Newly created user
 	// in: body
-	Body data.Product
+	Body dto.User
 }
 
 // No content is returned by this API endpoint
@@ -65,10 +67,10 @@ type productResponseWrapper struct {
 type noContentResponseWrapper struct {
 }
 
-// swagger:parameters updateDetail
-type productIDParamsWrapper struct {
-	// The id of the product for which the operation relates
+// swagger:parameters updateUser
+type userIDParamsWrapper struct {
+	// The id of the user for which the operation relates
 	// in: path
 	// required: true
-	ID primitive.ObjectID `json:"id"`
+	ID string `json:"id"`
 }

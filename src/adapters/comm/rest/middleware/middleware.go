@@ -1,12 +1,12 @@
-package http
+package middleware
 
 import "net/http"
 
 // KeyProduct is a key used carrying the Product object within the context, just to avoid deserializing it multiple times
 type KeyProduct struct{}
 
-// MiddlewareValidateNewProduct Product new book product in the request and calls next if ok
-func (apiContext *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Handler {
+// ValidateNewUser Product new book product in the request and calls next if ok
+func ValidateNewUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		// 		product := &dto.Product{}
 
