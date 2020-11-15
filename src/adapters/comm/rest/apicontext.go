@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
+
 	middleware "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
 	"github.com/gorilla/mux"
 	"github.com/nicholasjackson/env"
@@ -23,20 +25,24 @@ import (
 )
 
 // DBContext is the interface that APIContext expects to be fulfilled by Database code
-type DBContext interface {
-	CheckConnection() bool
-}
+// type DBContext interface {
+// 	CheckConnection() bool
+// }
 
 // APIContext handler for getting and updating Ratings
 type APIContext struct {
 	validation *middleware.Validation
-	dbContext  DBContext
+	//dbContext  DBContext
+	healthRepo application.HealthRepository
+	userRepo   application.UserRepository
 }
 
 // NewAPIContext returns a new APIContext handler with the given logger
-func NewAPIContext(dc DBContext, bindAddress *string) *http.Server {
+//func NewAPIContext(dc DBContext, bindAddress *string, ur application.UserRepository) *http.Server {
+func NewAPIContext(bindAddress *string, hr application.HealthRepository, ur application.UserRepository) *http.Server {
 	apiContext := &APIContext{
-		dbContext: dc,
+		healthRepo: hr,
+		userRepo:   ur,
 	}
 	s := apiContext.prepareContext(bindAddress)
 	return s
@@ -87,6 +93,7 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	getR.HandleFunc("/version", apiContext.Version)
 	getR.HandleFunc("/health/live", apiContext.Live)
 	getR.HandleFunc("/health/ready", apiContext.Ready)
+	getR.HandleFunc("/user/{id}", apiContext.GetUser)
 
 	// handler for documentation
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}

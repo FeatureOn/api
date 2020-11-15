@@ -3,6 +3,8 @@ package rest
 import (
 	"net/http"
 
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -25,7 +27,8 @@ func (ctx *APIContext) Live(rw http.ResponseWriter, r *http.Request) {
 
 // Ready handles GET requests
 func (ctx *APIContext) Ready(rw http.ResponseWriter, r *http.Request) {
-	status := ctx.dbContext.CheckConnection()
+	hs := application.NewHealthService(ctx.healthRepo)
+	status := hs.Ready()
 	if status == false {
 		log.Error().Msg("Error connecting to database")
 		rw.WriteHeader(http.StatusInternalServerError)

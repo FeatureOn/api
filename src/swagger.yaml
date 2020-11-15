@@ -255,6 +255,17 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - Health
+  /user/:
+    get:
+      description: Return 200 if the api is up and running and connected to the database
+      operationId: GetAllUsers
+      responses:
+        "200":
+          $ref: '#/responses/OK'
+        "404":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - User
   /version:
     get:
       description: Returns version information

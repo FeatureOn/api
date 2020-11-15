@@ -21,9 +21,9 @@ func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	config.SetConfigValues()
 
-	// create the handlers
 	dbContext := memory.NewDataContext()
-	s := rest.NewAPIContext(dbContext, bindAddress)
+	//s := rest.NewAPIContext(dbContext, bindAddress)
+	s := rest.NewAPIContext(bindAddress, dbContext.HealthRepository, dbContext.UserRepository)
 
 	// start the server
 	go func() {

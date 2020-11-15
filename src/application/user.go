@@ -23,7 +23,7 @@ type UserService struct {
 
 func NewUserService(ur UserRepository) UserService {
 	if ur == nil {
-		panic("missing trainingRepository")
+		panic("missing userRepository")
 	}
 	return UserService{
 		userRepository: ur,
