@@ -1,0 +1,7 @@
+{
+    "Constants": {
+        "CannotReadPayloadMsg": "Cannot reead payload",
+        "PayloadMissingMsg": "Payload is missing",
+        "Microsoft": "Error"
+    }
+}

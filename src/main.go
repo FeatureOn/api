@@ -12,14 +12,15 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	config "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/configuration"
+	util "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/util"
 )
 
 var bindAddress = env.String("BASE_URL", false, ":5500", "Bind address for the server")
 
 func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	config.SetConfigValues()
+	util.SetConstValues()
+	util.SetLogLevels()
 
 	dbContext := memory.NewDataContext()
 	//s := rest.NewAPIContext(dbContext, bindAddress)

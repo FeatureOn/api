@@ -2,9 +2,14 @@ package rest
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/spf13/viper"
 )
 
 // ToJSON serializes the given interface into a string based JSON format
@@ -21,17 +26,17 @@ func FromJSON(i interface{}, r io.Reader) error {
 }
 
 func readPayload(r *http.Request) (payload []byte, e error) {
-	payload, _ = ioutil.ReadAll(r.Body)
+	payload, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
-	// if err != nil {
-	// 	e = errors.New(util.CannotReadPayloadMsg)
-	// 	util.Logger.ERROR.Log(fmt.Sprintf(util.CannotReadPayload, err))
-	// 	return
-	// }
-	// if len(payload) == 0 {
-	// 	e = errors.New(util.PayloadMissing)
-	// 	util.Logger.ERROR.Log(util.PayloadMissing)
-	// 	return
-	// }
+	if err != nil {
+		e = errors.New(viper.GetString("CannotReadPayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotReadPayloadMsg"))
+		return
+	}
+	if len(payload) == 0 {
+		e = errors.New(viper.GetString("PayloadMissingMsg"))
+		log.Error().Err(err).Msg(viper.GetString("PayloadMissingMsg"))
+		return
+	}
 	return
 }
