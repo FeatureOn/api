@@ -28,12 +28,12 @@ func newUserRepository() UserRepository {
 
 func createInitialUsers() {
 	user := domain.User{}
-	user.ID = generateUUID()
+	user.ID = "b2bf3967-1991-fbf1-0d3e-93222d2a4050"
 	user.Name = "First User"
 	user.UserName = "firstu"
 	user.Password = application.HashPassword("firstp")
 	users = append(users, user)
-	user.ID = generateUUID()
+	user.ID = "1b644ef3-1fd3-ad9b-54ad-cbe9eff5bbfb"
 	user.Name = "Second User"
 	user.UserName = "secondu"
 	user.Password = application.HashPassword("secondp")

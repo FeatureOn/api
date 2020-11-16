@@ -89,11 +89,13 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 
 	// handlers for API
 	getR := sm.Methods(http.MethodGet).Subrouter()
+	putR := sm.Methods(http.MethodPut).Subrouter()
 	getR.HandleFunc("/", apiContext.Index)
 	getR.HandleFunc("/version", apiContext.Version)
 	getR.HandleFunc("/health/live", apiContext.Live)
 	getR.HandleFunc("/health/ready", apiContext.Ready)
 	getR.HandleFunc("/user/{id}", apiContext.GetUser)
+	putR.HandleFunc("/user", apiContext.AddUser)
 
 	// handler for documentation
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}

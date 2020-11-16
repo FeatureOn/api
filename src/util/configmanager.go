@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const pathToLogConfig = "config/livesettings.json"
+const pathToLogConfig = "configuration/livesettings.json"
 const pathToConfig = "configuration/constsettings.json"
 const logLevel = "Logging.LogLevel.Default"
 
@@ -30,6 +30,7 @@ func SetConstValues() {
 	}
 	viper.SetDefault("CannotReadPayloadMsg", "Cannot read payload")
 	viper.SetDefault("PayloadMissingMsg", "Payload is missing")
+	viper.SetDefault("CannotParsePayloadMsg", "Cannot parse payload")
 }
 
 // SetLogLevels gets configuration values from the file and injects them
@@ -44,15 +45,16 @@ func SetLogLevels() {
 		log.Warn().Msgf("No config file '%s' not found. Using default values", fullPath)
 	} else if err != nil { // Handle other errors that occurred while reading the config file
 		log.Err(err).Msgf("Error while reading the config file")
-	}
-	log.Info().Msgf("Log Level from config: %s", viper.GetString(logLevel))
-	setLogLevel(viper.GetString(logLevel))
-	// monitor the changes in the config file
-	viper.WatchConfig()
-	viper.OnConfigChange(func(e fsnotify.Event) {
+	} else {
 		log.Info().Msgf("Log Level from config: %s", viper.GetString(logLevel))
 		setLogLevel(viper.GetString(logLevel))
-	})
+		// monitor the changes in the config file
+		viper.WatchConfig()
+		viper.OnConfigChange(func(e fsnotify.Event) {
+			log.Info().Msgf("Log Level from config: %s", viper.GetString(logLevel))
+			setLogLevel(viper.GetString(logLevel))
+		})
+	}
 }
 
 func setLogLevel(level string) {
