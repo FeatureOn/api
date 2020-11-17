@@ -3,6 +3,7 @@ module dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api
 go 1.15
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-openapi/runtime v0.19.23
 	github.com/go-playground/universal-translator v0.17.0 // indirect

@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/viper"
 
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 	"github.com/gorilla/mux"
@@ -20,7 +21,7 @@ import (
 //	200: OK
 //	404: errorResponse
 
-// GetUser handles GET requests
+// GetUser gets a single user if found
 func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 	// parse the Rating id from the url
 	vars := mux.Vars(r)
@@ -30,12 +31,12 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 	userService := application.NewUserService(ctx.userRepo)
 	user, err := userService.GetUser(id)
 	if err == nil {
-		ToJSON(user, rw)
+		respondWithJSON(rw, r, 200, dto.MapUser2UserResponse(user))
 	}
 }
 
-// swagger:route PUT /user/{id} User GetUser
-// Return the user if found
+// swagger:route POST /user/{id} User AddUser
+// Adds a new user to the system
 // responses:
 //	200: OK
 //	404: errorResponse
@@ -51,7 +52,7 @@ func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 	userService := application.NewUserService(ctx.userRepo)
 	err = userService.AddUser(*user)
 	if err == nil {
-		ToJSON(user, rw)
+		respondWithJSON(rw, r, 200, user)
 	}
 }
 

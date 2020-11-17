@@ -62,8 +62,13 @@ func (ur UserRepository) AddUser(u domain.User) error {
 }
 
 // CheckUser checks the username & password if if matches any user frim the array
-func (ur UserRepository) CheckUser(username string, password string) (bool, error) {
-	return false, fmt.Errorf("Not impelemented")
+func (ur UserRepository) CheckUser(username string, password string) (domain.User, error) {
+	for _, user := range users {
+		if user.UserName == username && user.Password == password {
+			return user, nil
+		}
+	}
+	return domain.User{}, fmt.Errorf("Not found")
 }
 
 // UpdateUser updates an existing user on the user array

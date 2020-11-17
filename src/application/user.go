@@ -11,7 +11,7 @@ import (
 // UserRepository is the interface to interact with User domain object
 type UserRepository interface {
 	GetUser(ID string) (domain.User, error)
-	CheckUser(username string, password string) (bool, error)
+	CheckUser(username string, password string) (domain.User, error)
 	AddUser(u domain.User) error
 	UpdateUser(u domain.User) error
 	DeleteUser(u domain.User) error
@@ -34,7 +34,7 @@ func (us UserService) GetUser(ID string) (domain.User, error) {
 	return us.userRepository.GetUser(ID)
 }
 
-func (us UserService) CheckUser(username string, password string) (bool, error) {
+func (us UserService) CheckUser(username string, password string) (domain.User, error) {
 	return us.userRepository.CheckUser(username, HashPassword(password))
 }
 
