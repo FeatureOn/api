@@ -30,15 +30,14 @@ func (hr HealthRepository) Ready() bool {
 	if err != nil {
 		log.Error().Err(err).Msgf("An error occured while connecting to tha database")
 		return false
-	} else {
-		// Check the connection
-		err = hr.dbClient.Ping(context.TODO(), nil)
-		if err != nil {
-			log.Error().Err(err).Msg("An error occured while connecting to tha database")
-			return false
-		}
-		log.Info().Msg("Connection to MongoDB checked successfuly!")
-		return true
 	}
+	// Check the connection
+	err = hr.dbClient.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Error().Err(err).Msg("An error occured while connecting to tha database")
+		return false
+	}
+	log.Info().Msg("Connection to MongoDB checked successfuly!")
 	return true
+
 }

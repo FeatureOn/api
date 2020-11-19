@@ -1,9 +1,14 @@
 package mongodb
 
 import (
+	"context"
 	"fmt"
+	"time"
 
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb/dao"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/rs/zerolog/log"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -27,7 +32,23 @@ func (ur UserRepository) GetUser(ID string) (domain.User, error) {
 
 // AddUser adds a new user to the array in the memory
 func (ur UserRepository) AddUser(u domain.User) error {
-	return fmt.Errorf("Not impelemented")
+	userDao := dao.UserDAO{
+		Name:     u.Name,
+		UserName: u.UserName,
+		Password: u.Password,
+	}
+	collection := ur.dbClient.Database(ur.dbName).Collection("users") ///ToDo: Change static string to configuration value
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	userDao.ID = primitive.NewObjectID()
+	result, err := collection.InsertOne(ctx, userDao)
+	if err != nil {
+		log.Error().Err(err).Msg("Error while writing user")
+	} else {
+		log.Info().Msgf("User written: %s", result.InsertedID)
+	}
+	return err
 }
 
 // CheckUser checks the username & password if if matches any user frim the array

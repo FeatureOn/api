@@ -23,14 +23,14 @@ func NewDataContext() DataContext {
 	// We try to get connectionstring value from the environment variables, if not found it falls back to local database
 	connectionString := os.Getenv("ConnectionString")
 	if connectionString == "" {
-		connectionString = "mongodb://localhost:27017"
+		connectionString = "mongodb+srv://toggleruser:toggpassler@toggler.au80d.mongodb.net/<dbname>?retryWrites=true&w=majority"
 		log.Info().Msg("ConnectionString from Env not found, falling back to local DB")
 	} else {
 		log.Info().Msgf("ConnectionString from Env is used: '%s'", connectionString)
 	}
 	databaseName := os.Getenv("DatabaseName")
 	if databaseName == "" {
-		databaseName = "goboiler"
+		databaseName = "toggler"
 		log.Info().Msg("DatabaseName from Env not found, falling back to default")
 	} else {
 		log.Info().Msgf("DatabaseName from Env is used: '%s'", databaseName)

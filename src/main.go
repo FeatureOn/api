@@ -7,7 +7,8 @@ import (
 	"time"
 
 	rest "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest"
-	memory "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/memory"
+	//memory "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/memory"
+	mongodb "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb"
 	"github.com/nicholasjackson/env"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -22,7 +23,8 @@ func main() {
 	util.SetConstValues()
 	util.SetLogLevels()
 
-	dbContext := memory.NewDataContext()
+	//dbContext := memory.NewDataContext()
+	dbContext := mongodb.NewDataContext()
 	//s := rest.NewAPIContext(dbContext, bindAddress)
 	s := rest.NewAPIContext(bindAddress, dbContext.HealthRepository, dbContext.UserRepository)
 
