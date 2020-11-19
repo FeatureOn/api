@@ -1,4 +1,4 @@
-package mongo
+package mongodb
 
 import (
 	"context"
@@ -10,8 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// NewDBContext returns a new DBContext handler with the given logger
-func NewDBContext(v *Validation) *DBContext {
+// DataContext represents a struct that holds concrete repositories
+type DataContext struct {
+	UserRepository   UserRepository
+	HealthRepository HealthRepository
+}
+
+// NewDataContext returns a new mongoDB backed DataContext
+func NewDataContext() DataContext {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	// We try to get connectionstring value from the environment variables, if not found it falls back to local database
@@ -43,5 +49,8 @@ func NewDBContext(v *Validation) *DBContext {
 		}
 		log.Info().Msg("Connected to MongoDB!")
 	}
-	return &DBContext{*client, databaseName, APIContext{v}}
+	dataContext := DataContext{}
+	dataContext.UserRepository = newUserRepository(client, databaseName)
+	dataContext.HealthRepository = newHealthRepository(client, databaseName)
+	return dataContext
 }
