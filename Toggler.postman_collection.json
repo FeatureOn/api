@@ -105,7 +105,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5500/user/b2bf3967-1991-fbf1-0d3e-93222d2a4050",
+					"raw": "http://localhost:5500/user/5fb7b1d521e4f91673dc2293",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -113,7 +113,7 @@
 					"port": "5500",
 					"path": [
 						"user",
-						"b2bf3967-1991-fbf1-0d3e-93222d2a4050"
+						"5fb7b1d521e4f91673dc2293"
 					]
 				}
 			},
@@ -126,7 +126,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"Name\": \"Third User\",\n    \"UserName\": \"thirdu\",\n    \"Password\": \"thirdp\"\n}",
+					"raw": "{\n    \"Name\": \"Second User\",\n    \"UserName\": \"secondu\",\n    \"Password\": \"secondp\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
