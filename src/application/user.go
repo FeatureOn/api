@@ -35,10 +35,11 @@ func (us UserService) GetUser(ID string) (domain.User, error) {
 }
 
 func (us UserService) CheckUser(username string, password string) (domain.User, error) {
-	return us.userRepository.CheckUser(username, HashPassword(password))
+	return us.userRepository.CheckUser(username, hashPassword(password))
 }
 
 func (us UserService) AddUser(u domain.User) error {
+	u.Password = hashPassword(u.Password)
 	return us.userRepository.AddUser(u)
 }
 
@@ -51,7 +52,7 @@ func (us UserService) DeleteUser(u domain.User) error {
 }
 
 // HashPassword hashes the password string in order to getting ready to store or check if it matches the stored value
-func HashPassword(password string) string {
+func hashPassword(password string) string {
 	h := sha1.New()
 	h.Write([]byte(password))
 	return string(h.Sum(nil))

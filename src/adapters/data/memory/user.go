@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 )
 
@@ -19,6 +18,7 @@ import (
 
 var users []domain.User
 
+// UserRepository represent a structure that will communicate to memory to accomplish user related transactions
 type UserRepository struct{}
 
 func newUserRepository() UserRepository {
@@ -31,12 +31,12 @@ func createInitialUsers() {
 	user.ID = "b2bf3967-1991-fbf1-0d3e-93222d2a4050"
 	user.Name = "First User"
 	user.UserName = "firstu"
-	user.Password = application.HashPassword("firstp")
+	user.Password = "��I+Dܢ�r!:Z�0"
 	users = append(users, user)
 	user.ID = "1b644ef3-1fd3-ad9b-54ad-cbe9eff5bbfb"
 	user.Name = "Second User"
 	user.UserName = "secondu"
-	user.Password = application.HashPassword("secondp")
+	user.Password = "�~yվ�1_NR+�^�B��E"
 	users = append(users, user)
 }
 
@@ -51,14 +51,14 @@ func (ur UserRepository) GetUser(ID string) (domain.User, error) {
 }
 
 // AddUser adds a new user to the array in the memory
-func (ur UserRepository) AddUser(u domain.User) error {
+func (ur UserRepository) AddUser(u domain.User) (domain.User, error) {
 	var user domain.User
 	user.ID = generateUUID()
 	user.Name = u.Name
 	user.UserName = u.UserName
-	user.Password = application.HashPassword(u.Password)
+	user.Password = u.Password
 	users = append(users, user)
-	return nil
+	return user, nil
 }
 
 // CheckUser checks the username & password if if matches any user frim the array
