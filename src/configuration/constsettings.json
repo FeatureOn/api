@@ -2,6 +2,7 @@
     "Constants": {
         "CannotReadPayloadMsg": "Cannot reead payload",
         "PayloadMissingMsg": "Payload is missing",
-        "CannotParsePayloadMsg": "Cannot parse payload"
+        "CannotParsePayloadMsg": "Cannot parse payload",
+        "UsersCollection": "users"
     }
 }

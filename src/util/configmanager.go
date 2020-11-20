@@ -31,6 +31,7 @@ func SetConstValues() {
 	viper.SetDefault("CannotReadPayloadMsg", "Cannot read payload")
 	viper.SetDefault("PayloadMissingMsg", "Payload is missing")
 	viper.SetDefault("CannotParsePayloadMsg", "Cannot parse payload")
+	viper.SetDefault("UsersCollection", "users")
 }
 
 // SetLogLevels gets configuration values from the file and injects them

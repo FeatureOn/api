@@ -51,14 +51,14 @@ func (ur UserRepository) GetUser(ID string) (domain.User, error) {
 }
 
 // AddUser adds a new user to the array in the memory
-func (ur UserRepository) AddUser(u domain.User) (domain.User, error) {
+func (ur UserRepository) AddUser(u domain.User) error {
 	var user domain.User
 	user.ID = generateUUID()
 	user.Name = u.Name
 	user.UserName = u.UserName
 	user.Password = u.Password
 	users = append(users, user)
-	return user, nil
+	return nil
 }
 
 // CheckUser checks the username & password if if matches any user frim the array

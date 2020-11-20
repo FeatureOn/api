@@ -9,6 +9,7 @@ import (
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb/mappers"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,7 +30,7 @@ func newUserRepository(client *mongo.Client, databaseName string) UserRepository
 
 // GetUser returns one user with the given ID if it exists in the array, returns not found error otherwise
 func (ur UserRepository) GetUser(ID string) (domain.User, error) {
-	collection := ur.dbClient.Database(ur.dbName).Collection("users") ///ToDo: Change static string to configuration value
+	collection := ur.dbClient.Database(ur.dbName).Collection(viper.GetString("UsersCollection")) ///ToDo: Change static string to configuration value
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	objID, err := primitive.ObjectIDFromHex(ID)
@@ -47,9 +48,8 @@ func (ur UserRepository) GetUser(ID string) (domain.User, error) {
 }
 
 // AddUser adds a new user to the array in the memory
-func (ur UserRepository) AddUser(u domain.User) (domain.User, error) {
-
-	collection := ur.dbClient.Database(ur.dbName).Collection("users") ///ToDo: Change static string to configuration value
+func (ur UserRepository) AddUser(u domain.User) error {
+	collection := ur.dbClient.Database(ur.dbName).Collection(viper.GetString("UsersCollection")) ///ToDo: Change static string to configuration value
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	userDAO := mappers.MapUser2NewUserDAO(u)
