@@ -55,7 +55,7 @@ func (apiContext *APIContext) Login(w http.ResponseWriter, r *http.Request) {
 	userService := application.NewUserService(apiContext.userRepo)
 	user, err := userService.CheckUser(userLogin.UserName, userLogin.Password)
 	if err != nil {
-		respondWithError(w, r, 400, "User not found")
+		respondWithError(w, r, 401, "User not found")
 		log.Error().Err(err).Msg("User not found")
 		return
 	}
