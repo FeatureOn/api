@@ -6,8 +6,10 @@ import (
 	"time"
 
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb/dao"
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb/mappers"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 	"github.com/rs/zerolog/log"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -27,22 +29,31 @@ func newUserRepository(client *mongo.Client, databaseName string) UserRepository
 
 // GetUser returns one user with the given ID if it exists in the array, returns not found error otherwise
 func (ur UserRepository) GetUser(ID string) (domain.User, error) {
-	return domain.User{}, fmt.Errorf("Not impelemented")
-}
-
-// AddUser adds a new user to the array in the memory
-func (ur UserRepository) AddUser(u domain.User) error {
-	userDao := dao.UserDAO{
-		Name:     u.Name,
-		UserName: u.UserName,
-		Password: u.Password,
-	}
 	collection := ur.dbClient.Database(ur.dbName).Collection("users") ///ToDo: Change static string to configuration value
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+	objID, err := primitive.ObjectIDFromHex(ID)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error parsing UserID: %s", ID)
+		return domain.User{}, err
+	}
+	var userDAO dao.UserDAO
+	err = collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&userDAO)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error getting user with UserID: %s", ID)
+		return domain.User{}, err
+	}
+	return mappers.MapUserDAO2User(userDAO), nil
+}
 
-	userDao.ID = primitive.NewObjectID()
-	result, err := collection.InsertOne(ctx, userDao)
+// AddUser adds a new user to the array in the memory
+func (ur UserRepository) AddUser(u domain.User) (domain.User, error) {
+
+	collection := ur.dbClient.Database(ur.dbName).Collection("users") ///ToDo: Change static string to configuration value
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	userDAO := mappers.MapUser2NewUserDAO(u)
+	result, err := collection.InsertOne(ctx, userDAO)
 	if err != nil {
 		log.Error().Err(err).Msg("Error while writing user")
 	} else {
