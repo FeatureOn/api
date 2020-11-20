@@ -64,7 +64,16 @@ func (ur UserRepository) AddUser(u domain.User) error {
 
 // CheckUser checks the username & password if if matches any user frim the array
 func (ur UserRepository) CheckUser(username string, password string) (domain.User, error) {
-	return domain.User{}, fmt.Errorf("Not impelemented")
+	collection := ur.dbClient.Database(ur.dbName).Collection(viper.GetString("UsersCollection")) ///ToDo: Change static string to configuration value
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	var userDAO dao.UserDAO
+	err := collection.FindOne(ctx, bson.M{"username": username, "password": password}).Decode(&userDAO)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error getting user with username: %s", username)
+		return domain.User{}, err
+	}
+	return mappers.MapUserDAO2User(userDAO), nil
 }
 
 // UpdateUser updates an existing user on the user array
