@@ -51,7 +51,7 @@ type errorValidationWrapper struct {
 type usersResponseWrapper struct {
 	// All current products
 	// in: body
-	Body []dto.User
+	Body []dto.UserResponse
 }
 
 // Data structure representing a single user
@@ -59,7 +59,7 @@ type usersResponseWrapper struct {
 type userResponseWrapper struct {
 	// Newly created user
 	// in: body
-	Body dto.User
+	Body dto.UserResponse
 }
 
 // No content is returned by this API endpoint

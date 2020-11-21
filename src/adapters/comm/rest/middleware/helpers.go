@@ -1,4 +1,4 @@
-package rest
+package middleware
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
 	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/viper"
@@ -36,6 +37,22 @@ func readPayload(r *http.Request) (payload []byte, e error) {
 	if len(payload) == 0 {
 		e = errors.New(viper.GetString("PayloadMissingMsg"))
 		log.Error().Err(err).Msg(viper.GetString("PayloadMissingMsg"))
+		return
+	}
+	return
+}
+
+// ExtractUserPayload extracts user data from the request body
+// Returns UserRequest model if found, error otherwise
+func ExtractUserPayload(r *http.Request) (user *dto.UserRequest, e error) {
+	payload, e := readPayload(r)
+	if e != nil {
+		return
+	}
+	err := json.Unmarshal(payload, &user)
+	if err != nil {
+		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
 		return
 	}
 	return

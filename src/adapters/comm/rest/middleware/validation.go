@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 // ValidationError wraps the validators FieldError so we do not
@@ -47,8 +47,11 @@ func NewValidation() *Validation {
 
 // Validate validates the models
 func (v *Validation) Validate(i interface{}) ValidationErrors {
-	errs := v.validate.Struct(i).(validator.ValidationErrors)
-
+	err := v.validate.Struct(i)
+	if err == nil {
+		return nil
+	}
+	errs := err.(validator.ValidationErrors)
 	if len(errs) == 0 {
 		return nil
 	}
@@ -59,6 +62,5 @@ func (v *Validation) Validate(i interface{}) ValidationErrors {
 		ve := ValidationError{err.(validator.FieldError)}
 		returnErrs = append(returnErrs, ve)
 	}
-
 	return returnErrs
 }

@@ -1,19 +1,17 @@
 package rest
 
 import (
-	"encoding/json"
-	"errors"
+	"context"
 	"net/http"
 
-	"github.com/rs/zerolog/log"
-
-	"github.com/spf13/viper"
-
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
 )
+
+type ValidatedUser struct{}
 
 // swagger:route GET /user/{id} User GetUser
 // Return the user if found
@@ -44,30 +42,38 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 // AddUser creates a new user on the system
 func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 	// Get user data from oayload
-	user, err := extractUserPayload(r)
-	if err != nil {
-		rw.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	userDTO := r.Context().Value(ValidatedUser{}).(dto.UserRequest)
+	user := dto.MapUserRequest2User(userDTO)
 	userService := application.NewUserService(ctx.userRepo)
-	err = userService.AddUser(*user)
+	err := userService.AddUser(user)
 	if err == nil {
 		respondWithJSON(rw, r, 200, user)
 	}
 }
 
-// extractConsentPayload extracts user data from the request body
-// Returns user model if found, error otherwise
-func extractUserPayload(r *http.Request) (user *domain.User, e error) {
-	payload, e := readPayload(r)
-	if e != nil {
-		return
-	}
-	err := json.Unmarshal(payload, &user)
-	if err != nil {
-		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
-		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
-		return
-	}
-	return
+// MiddlewareValidateNewUser Checks the integrity of new user in the request and calls next if ok
+func (ctx *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		user, err := middleware.ExtractUserPayload(r)
+		if err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		// validate the product
+		errs := ctx.validation.Validate(user)
+		if errs != nil && len(errs) != 0 {
+			log.Error().Err(errs[0]).Msg("Error validating the user")
+
+			// return the validation messages as an array
+			respondWithJSON(rw, r, http.StatusUnprocessableEntity, errs.Errors())
+			return
+		}
+
+		// add the rating to the context
+		ctx := context.WithValue(r.Context(), ValidatedUser{}, *user)
+		r = r.WithContext(ctx)
+
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(rw, r)
+	})
 }

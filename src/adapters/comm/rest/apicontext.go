@@ -81,7 +81,7 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	defer closer.Close()
 	env.Parse()
 
-	//v := middleware.NewValidation()
+	apiContext.validation = middleware.NewValidation()
 
 	// create a new serve mux and register the handlers
 	sm := mux.NewRouter()
@@ -90,13 +90,14 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	// handlers for API
 	getR := sm.Methods(http.MethodGet).Subrouter()
 	putR := sm.Methods(http.MethodPut).Subrouter()
-	postR := sm.Methods(http.MethodPost).Subrouter()
 	getR.HandleFunc("/", apiContext.Index)
 	getR.HandleFunc("/version", apiContext.Version)
 	getR.HandleFunc("/health/live", apiContext.Live)
 	getR.HandleFunc("/health/ready", apiContext.Ready)
 	getR.HandleFunc("/user/{id}", apiContext.GetUser)
-	postR.HandleFunc("/user", apiContext.AddUser)
+	postUR := sm.Methods(http.MethodPost).Subrouter() // User subrouter for POST method
+	postUR.HandleFunc("/user", apiContext.AddUser)
+	postUR.Use(apiContext.MiddlewareValidateNewUser)
 	putR.HandleFunc("/login", apiContext.Login)
 	putR.HandleFunc("/login/refresh", apiContext.Refresh)
 	// handler for documentation
