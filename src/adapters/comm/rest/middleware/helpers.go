@@ -57,3 +57,19 @@ func ExtractUserPayload(r *http.Request) (user *dto.UserRequest, e error) {
 	}
 	return
 }
+
+// ExtractLoginPayload extracts login data from the request body
+// Returns LoginRequest model if found, error otherwise
+func ExtractLoginPayload(r *http.Request) (login *dto.LoginRequest, e error) {
+	payload, e := readPayload(r)
+	if e != nil {
+		return
+	}
+	err := json.Unmarshal(payload, &login)
+	if err != nil {
+		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
+		return
+	}
+	return
+}

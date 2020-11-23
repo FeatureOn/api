@@ -1,18 +1,19 @@
 package rest
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"context"
 	"net/http"
 	"time"
 
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
 
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
+	middleware "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
+
+type ValidatedLogin struct{}
 
 // Claims represents the data for a user login
 type Claims struct {
@@ -32,27 +33,9 @@ const cookieName = "togglertoken"
 //        200: OK
 //		  400: Bad Request
 //		  500: Internal Server Error
-func (apiContext *APIContext) Login(w http.ResponseWriter, r *http.Request) {
-	payload, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		log.Error().Err(err)
-		return
-	}
-	if len(payload) == 0 {
-		respondWithError(w, r, 400, viper.GetString("PayloadMissingMsg"))
-		log.Error()
-		return
-	}
-	var userLogin dto.LoginRequest
-	err = json.Unmarshal(payload, &userLogin)
-	if err != nil {
-		respondWithError(w, r, 400, viper.GetString("CannotReadPayloadMsg"))
-		log.Error().Err(err).Msg(viper.GetString("CannotReadPayloadMsg"))
-		return
-	}
-	userService := application.NewUserService(apiContext.userRepo)
+func (ctx *APIContext) Login(w http.ResponseWriter, r *http.Request) {
+	userLogin := r.Context().Value(ValidatedLogin{}).(dto.LoginRequest)
+	userService := application.NewUserService(ctx.userRepo)
 	user, err := userService.CheckUser(userLogin.UserName, userLogin.Password)
 	if err != nil {
 		respondWithError(w, r, 401, "User not found")
@@ -150,7 +133,7 @@ func checkLogin(r *http.Request) (status bool, httpStatusCode int, claims *Claim
 //        200: OK
 //		  400: Bad Request
 //		  500: Internal Server Error
-func (apiContext *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
+func (ctx *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
 	status, _, claims := checkLogin(r)
 	if status {
 		// We ensure that a new token is not issued until enough time has elapsed
@@ -181,4 +164,31 @@ func (apiContext *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
+}
+
+// MiddlewareValidateLoginRequest Checks the integrity of login information in the request and calls next if ok
+func (ctx *APIContext) MiddlewareValidateLoginRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		login, err := middleware.ExtractLoginPayload(r)
+		if err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		// validate the login
+		errs := ctx.validation.Validate(login)
+		if errs != nil && len(errs) != 0 {
+			log.Error().Err(errs[0]).Msg("Error validating the login")
+
+			// return the validation messages as an array
+			respondWithJSON(rw, r, http.StatusUnprocessableEntity, errs.Errors())
+			return
+		}
+
+		// add the rating to the context
+		ctx := context.WithValue(r.Context(), ValidatedLogin{}, *login)
+		r = r.WithContext(ctx)
+
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(rw, r)
+	})
 }

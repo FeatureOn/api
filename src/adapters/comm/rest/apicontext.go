@@ -89,17 +89,19 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 
 	// handlers for API
 	getR := sm.Methods(http.MethodGet).Subrouter()
-	putR := sm.Methods(http.MethodPut).Subrouter()
 	getR.HandleFunc("/", apiContext.Index)
 	getR.HandleFunc("/version", apiContext.Version)
 	getR.HandleFunc("/health/live", apiContext.Live)
 	getR.HandleFunc("/health/ready", apiContext.Ready)
 	getR.HandleFunc("/user/{id}", apiContext.GetUser)
 	postUR := sm.Methods(http.MethodPost).Subrouter() // User subrouter for POST method
-	postUR.HandleFunc("/user", apiContext.AddUser)
 	postUR.Use(apiContext.MiddlewareValidateNewUser)
-	putR.HandleFunc("/login", apiContext.Login)
-	putR.HandleFunc("/login/refresh", apiContext.Refresh)
+	postUR.HandleFunc("/user", apiContext.AddUser)
+	putLR := sm.Methods(http.MethodPut).Subrouter() // Login subrouter for PUT method
+	putLR.Use(apiContext.MiddlewareValidateLoginRequest)
+	putLR.HandleFunc("/login", apiContext.Login)
+	putRR := sm.Methods(http.MethodPut).Subrouter() // Refresh subrouter for PUT method
+	putRR.HandleFunc("/login/refresh", apiContext.Refresh)
 	// handler for documentation
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := openapimw.Redoc(opts, nil)

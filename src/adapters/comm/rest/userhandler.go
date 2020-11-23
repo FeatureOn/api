@@ -59,7 +59,7 @@ func (ctx *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler
 			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		// validate the product
+		// validate the user
 		errs := ctx.validation.Validate(user)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the user")
