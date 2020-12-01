@@ -17,10 +17,12 @@ type UserRepository interface {
 	DeleteUser(u domain.User) error
 }
 
+//UserService is the struct to let outer layers to interact to the User Applicatopn
 type UserService struct {
 	userRepository UserRepository
 }
 
+// NewUserService creates a new UserService instance
 func NewUserService(ur UserRepository) UserService {
 	if ur == nil {
 		panic("missing userRepository")
@@ -30,23 +32,28 @@ func NewUserService(ur UserRepository) UserService {
 	}
 }
 
+// GetUser simply returns a single user or an error that is returned from the repository
 func (us UserService) GetUser(ID string) (domain.User, error) {
 	return us.userRepository.GetUser(ID)
 }
 
+// CheckUser checks if the username and password maches any from the repository by first hashing its password, returns error if none found
 func (us UserService) CheckUser(username string, password string) (domain.User, error) {
 	return us.userRepository.CheckUser(username, hashPassword(password))
 }
 
+// AddUser adds a new user to the repository by first hashing its password
 func (us UserService) AddUser(u domain.User) error {
 	u.Password = hashPassword(u.Password)
 	return us.userRepository.AddUser(u)
 }
 
+// UpdateUser updates a single user on the repository, returns error if repository returns one
 func (us UserService) UpdateUser(u domain.User) error {
 	return us.userRepository.UpdateUser(u)
 }
 
+// DeleteUser deletes a single user from the repository, returns error if repository returns one
 func (us UserService) DeleteUser(u domain.User) error {
 	return us.userRepository.DeleteUser(u)
 }
