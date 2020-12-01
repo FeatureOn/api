@@ -22,7 +22,7 @@ type UserService struct {
 	userRepository UserRepository
 }
 
-// NewUserService creates a new UserService instance
+// NewUserService creates a new UserService instance and sets its repository
 func NewUserService(ur UserRepository) UserService {
 	if ur == nil {
 		panic("missing userRepository")
