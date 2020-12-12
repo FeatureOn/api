@@ -10,8 +10,11 @@ type Product struct {
 
 // Feature is a basic flag (as for now) holding a key within a project and its default state
 type Feature struct {
+	Name         string
 	Key          string
+	Description  string
 	DefaultState bool
+	Active       bool
 }
 
 // Environment is a struct that will hold the collection of flags for each of product's deployment
