@@ -23,9 +23,9 @@ type ProductRepository interface {
 	GetFeatureByKey(productID string, featureKey string) (string, error)
 	AddFeature(productID string, feat domain.Feature) (string, error)
 	UpdateFeature(productID string, feat domain.Feature) error
-	UpdateFeatureValue(productID string, environmentID string, featureID string, value bool)
-	DisableFeature(productID string, feat domain.Feature)
-	GetValues(productID string, environmentID string)
+	DisableFeature(productID string, feat domain.Feature) error
+	UpdateFeatureValue(productID string, environmentID string, featureID string, value bool) error
+	GetValues(productID string, environmentID string) ([]domain.Feature, error)
 }
 
 //ProductService is the struct to let outer layers to interact to the Product Applicatopn
@@ -119,7 +119,8 @@ func (ps ProductService) GetEnvironment(productID string, environmentID string) 
 	return ps.productRepository.GetEnvironment(productID, environmentID)
 }
 
-// AddFeature first checks the uniqueness of Feature@s Name and Key because the system should not allow Name and Key used twice
+// AddFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
+// then adds the feature on the product to the repository injected into ProductService
 func (ps ProductService) AddFeature(productID string, feat domain.Feature) (string, error) {
 	existingID, err := ps.productRepository.GetFeatureByName(productID, feat.Name)
 	if err != nil {
@@ -138,4 +139,41 @@ func (ps ProductService) AddFeature(productID string, feat domain.Feature) (stri
 		return "", errors.New("The freature key is not available")
 	}
 	return ps.productRepository.AddFeature(productID, feat)
+}
+
+// UpdateFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
+// then updates the feature on the product to the repository injected into ProductService
+func (ps ProductService) UpdateFeature(productID string, feat domain.Feature) (string, error) {
+	existingID, err := ps.productRepository.GetFeatureByName(productID, feat.Name)
+	if err != nil {
+		log.Error().Err(err).Msg("Error checking feature name uniqueness")
+		return "", err
+	}
+	if existingID != "" {
+		return "", errors.New("The freature name is not available")
+	}
+	existingID, err = ps.productRepository.GetFeatureByKey(productID, feat.Key)
+	if err != nil {
+		log.Error().Err(err).Msg("Error checking feature key uniqueness")
+		return "", err
+	}
+	if existingID != "" {
+		return "", errors.New("The freature key is not available")
+	}
+	return ps.productRepository.AddFeature(productID, feat)
+}
+
+// DisableFeature disables the specified feature on all environments of the product
+func (ps ProductService) DisableFeature(productID string, feat domain.Feature) error {
+	return ps.productRepository.DisableFeature(productID, feat)
+}
+
+// UpdateFeatureValue updates a Feature instance's value on its corresponding product and environment
+func (ps ProductService) UpdateFeatureValue(productID string, environmentID string, featureID string, value bool) error {
+	return ps.productRepository.UpdateFeatureValue(productID, environmentID, featureID, value)
+}
+
+// GetValues gets all feature values for a given product and environment
+func (ps ProductService) GetValues(productID string, environmentID string) ([]domain.Feature, error) {
+	return ps.productRepository.GetValues(productID, environmentID)
 }
