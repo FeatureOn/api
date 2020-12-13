@@ -10,6 +10,7 @@ import (
 // AddFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
 // then adds the feature on the product to the repository injected into ProductService
 func (ps ProductService) AddFeature(productID string, feat domain.Feature) (string, error) {
+	// Check the Feature's name and key are unique
 	existingID, err := ps.productRepository.GetFeatureByName(productID, feat.Name)
 	if err != nil {
 		log.Error().Err(err).Msg("Error checking feature name uniqueness")
@@ -26,7 +27,26 @@ func (ps ProductService) AddFeature(productID string, feat domain.Feature) (stri
 	if existingID != "" {
 		return "", errors.New("The feature key is not available")
 	}
-	return ps.productRepository.AddFeature(productID, feat)
+	// Add the feature to the product
+	featureID, err := ps.productRepository.AddFeature(productID, feat)
+	if err != nil {
+		log.Error().Err(err).Msg("Error adding a new feature")
+		return "", errors.New("Error adding a new feature")
+	}
+	// Get product's all environments
+	envs, err := ps.productRepository.GetEnvironments(productID)
+	if err != nil {
+		log.Error().Err(err).Msg("Feature added but could not get environments")
+		return "", errors.New("Error adding a new feature")
+		/// ToDo: decide whether rollback or whatever
+	}
+	for _, environment := range envs {
+		err = ps.flagRepository.AddFlag(environment.ID, featureID, feat.DefaultState)
+		if err != nil {
+			log.Error().Err(err).Msgf("Error adding feature %s to environment %s", featureID, environment.ID)
+		}
+	}
+	return featureID, nil
 }
 
 // UpdateFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
