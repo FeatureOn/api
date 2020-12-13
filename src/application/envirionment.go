@@ -18,7 +18,17 @@ func (ps ProductService) AddEnvironment(productID string, environmentName string
 	if existingID != productID {
 		return "", errors.New("The environment name is not available")
 	}
-	return ps.productRepository.AddEnvironment(productID, environmentName)
+	environmentID, err := ps.productRepository.AddEnvironment(productID, environmentName)
+	if err != nil {
+		log.Error().Err(err).Msg("Error adding new environment")
+		return "", errors.New("Error adding new environment")
+	}
+	/// ToDo: Add code to add all active flags to new environment
+	features, err := ps.productRepository.GetFeatures(productID)
+	for _, feat := range features {
+		ps.flagRepository.AddFlag(environmentID, feat.Key, feat.DefaultState)
+	}
+	return environmentID, nil
 }
 
 // UpdateEnvironment first checks the availability of the name because the system should not allow the same name used twice
