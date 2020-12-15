@@ -18,16 +18,22 @@ func (ps ProductService) AddEnvironment(productID string, environmentName string
 	if existingID != productID {
 		return "", errors.New("The environment name is not available")
 	}
-	environmentID, err := ps.productRepository.AddEnvironment(productID, environmentName)
+	features, err := ps.productRepository.GetFeatures(productID)
+	envflag := domain.EnvironmentFlag{}
+	for _, feat := range features {
+		flag := domain.Flag{
+			FeatureKey: feat.Key,
+			Value:      feat.DefaultState,
+		}
+		envflag.Flags = append(envflag.Flags, flag)
+	}
+	environmentID, err := ps.productRepository.AddEnvironment(productID, environmentName, envflag)
 	if err != nil {
 		log.Error().Err(err).Msg("Error adding new environment")
 		return "", errors.New("Error adding new environment")
 	}
-	/// ToDo: Add code to add all active flags to new environment
-	features, err := ps.productRepository.GetFeatures(productID)
-	for _, feat := range features {
-		ps.flagRepository.AddFlag(environmentID, feat.Key, feat.DefaultState)
-	}
+
+	//ps.flagRepository.AddFlag(environmentID, feat.Key, feat.DefaultState)
 	return environmentID, nil
 }
 

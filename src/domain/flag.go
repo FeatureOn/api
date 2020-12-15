@@ -1,8 +1,13 @@
 package domain
 
-// Flag represents the structure for each Feature value for each environment of a product
-type Flag struct {
+// EnvironmentFlag respresents the structure that matches flags to the environments
+type EnvironmentFlag struct {
 	EnvironmentID string
-	FeatureKey    string
-	Value         bool
+	Flags         []Flag
+}
+
+// Flag represents the structure for each Feature values of environments
+type Flag struct {
+	FeatureKey string
+	Value      bool
 }
