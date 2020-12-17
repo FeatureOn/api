@@ -17,7 +17,7 @@ type ProductRepository interface {
 	GetFeatureByName(productID string, featureName string) (string, error)
 	GetFeatureByKey(productID string, featureKey string) (string, error)
 	GetFeatures(productID string) ([]domain.Feature, error)
-	AddFeature(productID string, feat domain.Feature) (string, error)
+	AddFeature(productID string, feat domain.Feature, envFlags []domain.EnvironmentFlag) (string, error)
 	UpdateFeature(productID string, feat domain.Feature) error
 	DisableFeature(productID string, feat domain.Feature) error
 	UpdateFeatureValue(productID string, environmentID string, featureID string, value bool) error

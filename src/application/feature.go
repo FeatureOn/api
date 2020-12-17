@@ -27,12 +27,6 @@ func (ps ProductService) AddFeature(productID string, feat domain.Feature) (stri
 	if existingID != "" {
 		return "", errors.New("The feature key is not available")
 	}
-	// Add the feature to the product
-	featureID, err := ps.productRepository.AddFeature(productID, feat)
-	if err != nil {
-		log.Error().Err(err).Msg("Error adding a new feature")
-		return "", errors.New("Error adding a new feature")
-	}
 	// Get product's all environments
 	envs, err := ps.productRepository.GetEnvironments(productID)
 	if err != nil {
@@ -40,11 +34,25 @@ func (ps ProductService) AddFeature(productID string, feat domain.Feature) (stri
 		return "", errors.New("Error adding a new feature")
 		/// ToDo: decide whether rollback or whatever
 	}
+	// Create flags for each environment
+	envflags := make([]domain.EnvironmentFlag, 0)
 	for _, environment := range envs {
-		err = ps.flagRepository.AddFlag(environment.ID, featureID, feat.DefaultState)
-		if err != nil {
-			log.Error().Err(err).Msgf("Error adding feature %s to environment %s", featureID, environment.ID)
+		envflag := domain.EnvironmentFlag{
+			EnvironmentID: environment.ID,
 		}
+		flag := domain.Flag{
+			FeatureKey: feat.Key,
+			Value:      feat.DefaultState,
+		}
+		envflag.Flags = append(envflag.Flags, flag)
+		envflags = append(envflags, envflag)
+	}
+
+	// Add the feature to the product
+	featureID, err := ps.productRepository.AddFeature(productID, feat, envflags)
+	if err != nil {
+		log.Error().Err(err).Msg("Error adding a new feature")
+		return "", errors.New("Error adding a new feature")
 	}
 	return featureID, nil
 }
