@@ -37,3 +37,10 @@ func MapUserDAO2User(u dao.UserDAO) domain.User {
 	user.Password = u.Password
 	return user
 }
+
+func MapProductDAO2Product(p dao.ProductDAO) domain.Product {
+	product := domain.Product{}
+	product.ID = p.ID.Hex()
+	product.Name = p.Name
+	return product
+}

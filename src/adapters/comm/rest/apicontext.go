@@ -33,8 +33,10 @@ import (
 type APIContext struct {
 	validation *middleware.Validation
 	//dbContext  DBContext
-	healthRepo application.HealthRepository
-	userRepo   application.UserRepository
+	healthRepo  application.HealthRepository
+	userRepo    application.UserRepository
+	productRepo application.ProductRepository
+	flagRepo    application.FlagRepository
 }
 
 // NewAPIContext returns a new APIContext handler with the given logger
