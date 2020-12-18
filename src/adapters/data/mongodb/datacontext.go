@@ -12,8 +12,10 @@ import (
 
 // DataContext represents a struct that holds concrete repositories
 type DataContext struct {
-	UserRepository   UserRepository
-	HealthRepository HealthRepository
+	UserRepository    UserRepository
+	HealthRepository  HealthRepository
+	ProductRepository ProductRepository
+	FlagRepository    FlagRepository
 }
 
 // NewDataContext returns a new mongoDB backed DataContext
@@ -52,5 +54,7 @@ func NewDataContext() DataContext {
 	dataContext := DataContext{}
 	dataContext.UserRepository = newUserRepository(client, databaseName)
 	dataContext.HealthRepository = newHealthRepository(client, databaseName)
+	dataContext.ProductRepository = newProductRepository(client, databaseName)
+	dataContext.FlagRepository = newFlagRepository(client, databaseName)
 	return dataContext
 }

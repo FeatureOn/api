@@ -15,7 +15,7 @@ const pathToLogConfig = "configuration/livesettings.json"
 const pathToConfig = "configuration/constsettings.json"
 const logLevel = "Logging.LogLevel.Default"
 
-// SetLogLevels gets configuration values from the file and injects them
+// SetConstValues gets constant values from the file and injects them
 func SetConstValues() {
 	currentPath, _ := os.Getwd()
 	fullPath := path.Join(currentPath, pathToConfig)
@@ -32,6 +32,8 @@ func SetConstValues() {
 	viper.SetDefault("PayloadMissingMsg", "Payload is missing")
 	viper.SetDefault("CannotParsePayloadMsg", "Cannot parse payload")
 	viper.SetDefault("UsersCollection", "users")
+	viper.SetDefault("ProductsCollection", "products")
+	viper.SetDefault("FlagsCollection", "flags")
 }
 
 // SetLogLevels gets configuration values from the file and injects them

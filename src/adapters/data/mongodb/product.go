@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb/dao"
@@ -44,4 +45,68 @@ func (pr ProductRepository) GetProduct(ID string) (domain.Product, error) {
 		return domain.Product{}, err
 	}
 	return mappers.MapProductDAO2Product(ProductDAO), nil
+}
+
+func (pr ProductRepository) GetProductByName(productName string) (string, error) {
+	return "", errors.New("Not implemented")
+}
+func (pr ProductRepository) AddProduct(productName string) (string, error) {
+	return "", errors.New("Not implemented")
+
+}
+func (pr ProductRepository) UpdateProduct(productID string, productName string) error {
+	return errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
+	return nil, errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetEnvironmentByName(productID string, envirionmentName string) (string, error) {
+	return "", errors.New("Not implemented")
+
+}
+func (pr ProductRepository) AddEnvironment(productID string, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error) {
+	return "", errors.New("Not implemented")
+
+}
+func (pr ProductRepository) Updatenvironment(productID string, environmentID string, environmentName string) error {
+	return errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetEnvironments(productID string) ([]domain.Environment, error) {
+	return nil, errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetEnvironment(productID string, environmentID string) (domain.Environment, error) {
+	return domain.Environment{}, errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetFeatureByName(productID string, featureName string) (string, error) {
+	return "", errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetFeatureByKey(productID string, featureKey string) (string, error) {
+	return "", errors.New("Not implemented")
+
+}
+func (pr ProductRepository) GetFeatures(productID string) ([]domain.Feature, error) {
+	return nil, errors.New("Not implemented")
+
+}
+func (pr ProductRepository) AddFeature(productID string, feat domain.Feature, envFlags []domain.EnvironmentFlag) (string, error) {
+	return "", errors.New("Not implemented")
+
+}
+func (pr ProductRepository) UpdateFeature(productID string, feat domain.Feature) error {
+	return errors.New("Not implemented")
+
+}
+func (pr ProductRepository) DisableFeature(productID string, feat domain.Feature) error {
+	return errors.New("Not implemented")
+
+}
+func (pr ProductRepository) UpdateFeatureValue(productID string, environmentID string, featureID string, value bool) error {
+	return errors.New("Not implemented")
+
 }

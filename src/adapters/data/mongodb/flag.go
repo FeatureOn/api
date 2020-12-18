@@ -1,6 +1,9 @@
 package mongodb
 
 import (
+	"errors"
+
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -15,4 +18,12 @@ func newFlagRepository(client *mongo.Client, databaseName string) FlagRepository
 		dbClient: client,
 		dbName:   databaseName,
 	}
+}
+
+func (fr FlagRepository) AddFlag(environmentID string, FeatureID string, value bool) error {
+	return errors.New("Not implemented")
+}
+
+func (fr FlagRepository) GetFlags(environmentID string) ([]domain.Flag, error) {
+	return nil, errors.New("Not implemented")
 }

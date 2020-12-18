@@ -41,10 +41,12 @@ type APIContext struct {
 
 // NewAPIContext returns a new APIContext handler with the given logger
 //func NewAPIContext(dc DBContext, bindAddress *string, ur application.UserRepository) *http.Server {
-func NewAPIContext(bindAddress *string, hr application.HealthRepository, ur application.UserRepository) *http.Server {
+func NewAPIContext(bindAddress *string, hr application.HealthRepository, ur application.UserRepository, pr application.ProductRepository, fr application.FlagRepository) *http.Server {
 	apiContext := &APIContext{
-		healthRepo: hr,
-		userRepo:   ur,
+		healthRepo:  hr,
+		userRepo:    ur,
+		productRepo: pr,
+		flagRepo:    fr,
 	}
 	s := apiContext.prepareContext(bindAddress)
 	return s
@@ -104,6 +106,8 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	putLR.HandleFunc("/login", apiContext.Login)
 	putRR := sm.Methods(http.MethodPut).Subrouter() // Refresh subrouter for PUT method
 	putRR.HandleFunc("/login/refresh", apiContext.Refresh)
+	getPR := sm.Methods(http.MethodGet).Subrouter() // Product subrouter for GET method
+	getPR.HandleFunc("/product/{id}", apiContext.GetProduct)
 	// handler for documentation
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := openapimw.Redoc(opts, nil)
