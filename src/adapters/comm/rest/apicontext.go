@@ -108,6 +108,7 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	putRR.HandleFunc("/login/refresh", apiContext.Refresh)
 	getPR := sm.Methods(http.MethodGet).Subrouter() // Product subrouter for GET method
 	getPR.HandleFunc("/product/{id}", apiContext.GetProduct)
+	getPR.HandleFunc("/product", apiContext.GetProducts)
 	// handler for documentation
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := openapimw.Redoc(opts, nil)

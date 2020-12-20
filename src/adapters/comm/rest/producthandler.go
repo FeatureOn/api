@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/mappers"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
 	"github.com/gorilla/mux"
 )
@@ -24,6 +24,21 @@ func (ctx *APIContext) GetProduct(rw http.ResponseWriter, r *http.Request) {
 	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
 	product, err := productService.GetProduct(id)
 	if err == nil {
-		respondWithJSON(rw, r, 200, dto.MapProduct2ProductResponse(product))
+		respondWithJSON(rw, r, 200, mappers.MapProduct2ProductDetailResponse(product))
+	}
+}
+
+// swagger:route GET /product Products GetProducts
+// Return the list of products if found
+// responses:
+//	200: OK
+//	404: errorResponse
+
+// GetProducts gets a list of products if found
+func (ctx *APIContext) GetProducts(rw http.ResponseWriter, r *http.Request) {
+	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	products, err := productService.GetProducts()
+	if err == nil {
+		respondWithJSON(rw, r, 200, mappers.MapProduct2ProductResponse(products))
 	}
 }

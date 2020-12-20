@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
+	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/mappers"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
 	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
 	"github.com/gorilla/mux"
@@ -29,7 +30,7 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 	userService := application.NewUserService(ctx.userRepo)
 	user, err := userService.GetUser(id)
 	if err == nil {
-		respondWithJSON(rw, r, 200, dto.MapUser2UserResponse(user))
+		respondWithJSON(rw, r, 200, mappers.MapUser2UserResponse(user))
 	}
 }
 
@@ -43,7 +44,7 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 	// Get user data from oayload
 	userDTO := r.Context().Value(ValidatedUser{}).(dto.UserRequest)
-	user := dto.MapUserRequest2User(userDTO)
+	user := mappers.MapUserRequest2User(userDTO)
 	userService := application.NewUserService(ctx.userRepo)
 	err := userService.AddUser(user)
 	if err == nil {

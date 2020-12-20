@@ -59,7 +59,26 @@ func (pr ProductRepository) UpdateProduct(productID string, productName string) 
 
 }
 func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
-	return nil, errors.New("Not implemented")
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	var productDAO dao.ProductDAO
+	cur, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Error().Err(err).Msgf("Error getting Products")
+		return nil, err
+	}
+	products := make([]domain.Product, 0)
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		err := cur.Decode(&productDAO)
+		if err != nil {
+			return nil, err
+		}
+		product := mappers.MapProductDAO2Product(productDAO)
+		products = append(products, product)
+	}
+	return products, nil
 
 }
 func (pr ProductRepository) GetEnvironmentByName(productID string, envirionmentName string) (string, error) {
