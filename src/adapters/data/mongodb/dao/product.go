@@ -14,15 +14,15 @@ type ProductDAO struct {
 
 // FeatureDAO is a basic flag (as for now) holding a key within a project and its default state
 type FeatureDAO struct {
-	Name         string
-	Key          string
-	Description  string
-	DefaultState bool
-	Active       bool
+	Name         string `bson:"name"`
+	Key          string `bson:"key"`
+	Description  string `bson:"description"`
+	DefaultState bool   `bson:"defaultstate"`
+	Active       bool   `bson:"active"`
 }
 
 // EnvironmentDAO is a struct that will hold the collection of flags for each of product's deployment
 type EnvironmentDAO struct {
-	ID   string
-	Name string
+	ID   primitive.ObjectID `bson:"id"`
+	Name string             `bson:"name"`
 }

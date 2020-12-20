@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ProductRepository represent a structpre that will communicate to MongoDB to accomplish product related transactions
@@ -83,8 +84,28 @@ func (pr ProductRepository) UpdateProduct(productID string, productName string) 
 }
 
 func (pr ProductRepository) AddEnvironment(product domain.Product, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error) {
-	return "", errors.New("Not implemented")
+	productDAO := mappers.MapProduct2ProductDAO(product)
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	newEnvID := primitive.NewObjectID()
+	newEnv := dao.EnvironmentDAO{
+		ID:   newEnvID,
+		Name: environmentName,
+	}
+	productDAO.Environments = append(productDAO.Environments, newEnv)
+	idDoc := bson.D{{"_id", product.ID}}
 
+	upDoc := bson.D{{"$set", bson.M{"environments": product.Environments}}}
+	var updateOpts options.UpdateOptions
+	updateOpts.SetUpsert(false)
+	_, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+	if err == nil {
+		return newEnvID.Hex(), nil
+	} else {
+		log.Error().Err(err).Msgf("Error adding environment with name %s", environmentName)
+		return "", err
+	}
 }
 
 func (pr ProductRepository) Updatenvironment(product domain.Product, environmentID string, environmentName string) error {
