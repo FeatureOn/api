@@ -105,7 +105,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5500/user/5fb7b1d521e4f91673dc2293",
+					"raw": "http://localhost:5500/user/b2bf3967-1991-fbf1-0d3e-93222d2a4050",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -113,7 +113,7 @@
 					"port": "5500",
 					"path": [
 						"user",
-						"5fb7b1d521e4f91673dc2293"
+						"b2bf3967-1991-fbf1-0d3e-93222d2a4050"
 					]
 				}
 			},
@@ -178,7 +178,7 @@
 		{
 			"name": "Refresh Token",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [],
 				"url": {
 					"raw": "http://localhost:5500/login/refresh",
@@ -194,7 +194,17 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get Product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
