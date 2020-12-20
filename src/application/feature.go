@@ -9,47 +9,41 @@ import (
 
 // AddFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
 // then adds the feature on the product to the repository injected into ProductService
-func (ps ProductService) AddFeature(productID string, feat domain.Feature) (string, error) {
-	// Check the Feature's name and key are unique
-	existingID, err := ps.productRepository.GetFeatureByName(productID, feat.Name)
+func (ps ProductService) AddFeature(productID string, feature domain.Feature) (string, error) {
+	// Get the product data from the data store
+	product, err := ps.productRepository.GetProduct(productID)
 	if err != nil {
-		log.Error().Err(err).Msg("Error checking feature name uniqueness")
+		log.Error().Err(err).Msgf("Error getting the product with id: %s", productID)
 		return "", err
 	}
-	if existingID != "" {
-		return "", errors.New("The feature name is not available")
+	// Check the feature key and name is not in use
+	for _, feat := range product.Features {
+		if feat.Key == feature.Key {
+			log.Info().Msgf("Cannot add new feature, key is not unique: %s", feature.Key)
+			return "", errors.New("The feature key is not available")
+		}
+		if feat.Name == feature.Name {
+			log.Info().Msgf("Cannot add new feature, name is not unique: %s", feature.Name)
+			return "", errors.New("The feature name is not available")
+		}
 	}
-	existingID, err = ps.productRepository.GetFeatureByKey(productID, feat.Key)
-	if err != nil {
-		log.Error().Err(err).Msg("Error checking feature key uniqueness")
-		return "", err
-	}
-	if existingID != "" {
-		return "", errors.New("The feature key is not available")
-	}
-	// Get product's all environments
-	envs, err := ps.productRepository.GetEnvironments(productID)
-	if err != nil {
-		log.Error().Err(err).Msg("Feature added but could not get environments")
-		return "", errors.New("Error adding a new feature")
-		/// ToDo: decide whether rollback or whatever
-	}
+
 	// Create flags for each environment
 	envflags := make([]domain.EnvironmentFlag, 0)
-	for _, environment := range envs {
+	for _, environment := range product.Environments {
 		envflag := domain.EnvironmentFlag{
 			EnvironmentID: environment.ID,
 		}
 		flag := domain.Flag{
-			FeatureKey: feat.Key,
-			Value:      feat.DefaultState,
+			FeatureKey: feature.Key,
+			Value:      feature.DefaultState,
 		}
 		envflag.Flags = append(envflag.Flags, flag)
 		envflags = append(envflags, envflag)
 	}
 
 	// Add the feature to the product
-	featureID, err := ps.productRepository.AddFeature(productID, feat, envflags)
+	featureID, err := ps.productRepository.AddFeature(product, feature, envflags)
 	if err != nil {
 		log.Error().Err(err).Msg("Error adding a new feature")
 		return "", errors.New("Error adding a new feature")
@@ -59,27 +53,28 @@ func (ps ProductService) AddFeature(productID string, feat domain.Feature) (stri
 
 // UpdateFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
 // then updates the feature on the product to the repository injected into ProductService
-func (ps ProductService) UpdateFeature(productID string, feat domain.Feature) error {
-	existingKey, err := ps.productRepository.GetFeatureByName(productID, feat.Name)
+func (ps ProductService) UpdateFeature(productID string, feature domain.Feature) error {
+	// Get the product data from the data store
+	product, err := ps.productRepository.GetProduct(productID)
 	if err != nil {
-		log.Error().Err(err).Msg("Error checking feature name uniqueness")
+		log.Error().Err(err).Msgf("Error getting the product with id: %s", productID)
 		return err
 	}
-	if existingKey != feat.Key {
-		return errors.New("The feature name is not available")
+	// Check the feature key and name is not in use
+	for _, feat := range product.Features {
+		if feat.Key == feature.Key {
+			log.Info().Msgf("Cannot add new feature, key is not unique: %s", feature.Key)
+			return errors.New("The feature key is not available")
+		}
+		if feat.Name == feature.Name {
+			log.Info().Msgf("Cannot add new feature, name is not unique: %s", feature.Name)
+			return errors.New("The feature name is not available")
+		}
 	}
-	existingKey, err = ps.productRepository.GetFeatureByKey(productID, feat.Key)
-	if err != nil {
-		log.Error().Err(err).Msg("Error getting the feature")
-		return err
-	}
-	if existingKey == "" {
-		return errors.New("Feature key cannot be changed and there's no feature with the key provided")
-	}
-	return ps.productRepository.UpdateFeature(productID, feat)
+	return ps.productRepository.UpdateFeature(product, feature)
 }
 
 // DisableFeature disables the specified feature on all environments of the product
-func (ps ProductService) DisableFeature(productID string, feat domain.Feature) error {
-	return ps.productRepository.DisableFeature(productID, feat)
+func (ps ProductService) DisableFeature(product domain.Product, feat domain.Feature) error {
+	return ps.productRepository.DisableFeature(product, feat)
 }

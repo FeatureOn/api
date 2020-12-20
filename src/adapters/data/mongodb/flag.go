@@ -27,3 +27,8 @@ func (fr FlagRepository) AddFlag(environmentID string, FeatureID string, value b
 func (fr FlagRepository) GetFlags(environmentID string) ([]domain.Flag, error) {
 	return nil, errors.New("Not implemented")
 }
+
+func (fr FlagRepository) UpdateFlag(productID string, environmentID string, featureID string, value bool) error {
+	return errors.New("Not implemented")
+
+}

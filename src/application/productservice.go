@@ -6,27 +6,21 @@ import "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
 type ProductRepository interface {
 	GetProductByName(productName string) (string, error)
 	AddProduct(productName string) (string, error)
-	UpdateProduct(productID string, productName string) error
+	UpdateProduct(product string, productName string) error
 	GetProducts() ([]domain.Product, error)
 	GetProduct(id string) (domain.Product, error)
-	GetEnvironmentByName(productID string, envirionmentName string) (string, error)
-	AddEnvironment(productID string, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error)
-	Updatenvironment(productID string, environmentID string, environmentName string) error
-	GetEnvironments(productID string) ([]domain.Environment, error)
-	GetEnvironment(productID string, environmentID string) (domain.Environment, error)
-	GetFeatureByName(productID string, featureName string) (string, error)
-	GetFeatureByKey(productID string, featureKey string) (string, error)
-	GetFeatures(productID string) ([]domain.Feature, error)
-	AddFeature(productID string, feat domain.Feature, envFlags []domain.EnvironmentFlag) (string, error)
-	UpdateFeature(productID string, feat domain.Feature) error
-	DisableFeature(productID string, feat domain.Feature) error
-	UpdateFeatureValue(productID string, environmentID string, featureID string, value bool) error
+	AddEnvironment(product domain.Product, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error)
+	Updatenvironment(product domain.Product, environmentID string, environmentName string) error
+	AddFeature(product domain.Product, feature domain.Feature, envFlags []domain.EnvironmentFlag) (string, error)
+	UpdateFeature(product domain.Product, feature domain.Feature) error
+	DisableFeature(product domain.Product, feature domain.Feature) error
 }
 
 // FlagRepository is the interface to interact with Flag domain object
 type FlagRepository interface {
 	AddFlag(environmentID string, FeatureID string, value bool) error
 	GetFlags(environmentID string) ([]domain.Flag, error)
+	UpdateFlag(productID string, environmentID string, featureID string, value bool) error
 }
 
 //ProductService is the struct to let outer layers to interact to the Product Applicatopn
