@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/adapters/comm/rest/dto"
 	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/viper"

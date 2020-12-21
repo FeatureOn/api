@@ -3,7 +3,7 @@ package application
 import (
 	"errors"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/domain"
 	"github.com/rs/zerolog/log"
 )
 

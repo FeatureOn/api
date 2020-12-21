@@ -6,14 +6,14 @@ import (
 	"os/signal"
 	"time"
 
-	rest "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest"
-	//memory "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/memory"
-	mongodb "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb"
+	rest "github.com/FeatureOn/api/adapters/comm/rest"
+	//memory "github.com/FeatureOn/api/adapters/data/memory"
+	mongodb "github.com/FeatureOn/api/adapters/data/mongodb"
 	"github.com/nicholasjackson/env"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	util "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/util"
+	util "github.com/FeatureOn/api/util"
 )
 
 var bindAddress = env.String("BASE_URL", false, ":5500", "Bind address for the server")

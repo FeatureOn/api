@@ -1,4 +1,4 @@
-module dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api
+module github.com/FeatureOn/api
 
 go 1.15
 

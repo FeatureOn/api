@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
+	"github.com/FeatureOn/api/application"
 
-	middleware "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
+	middleware "github.com/FeatureOn/api/adapters/comm/rest/middleware"
 	"github.com/gorilla/mux"
 	"github.com/nicholasjackson/env"
 	opentracing "github.com/opentracing/opentracing-go"

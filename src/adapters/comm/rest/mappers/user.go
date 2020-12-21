@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/domain"
 )
 
 // MapUserRequest2User maps dto UserRequest to domain User

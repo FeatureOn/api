@@ -17,8 +17,8 @@
 package rest
 
 import (
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
-	middleware "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/adapters/comm/rest/dto"
+	middleware "github.com/FeatureOn/api/adapters/comm/rest/middleware"
 )
 
 //

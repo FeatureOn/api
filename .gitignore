@@ -13,7 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 src/vendor/
-src/toggler-api
+src/api
 src/__debug_bin
 src/.scannerwork
 src/*.log

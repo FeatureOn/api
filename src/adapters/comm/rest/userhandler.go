@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/mappers"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/middleware"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
+	"github.com/FeatureOn/api/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/adapters/comm/rest/mappers"
+	"github.com/FeatureOn/api/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/application"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 )

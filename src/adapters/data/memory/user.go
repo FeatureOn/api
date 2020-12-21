@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/domain"
 )
 
 // // User object represents the user model to hold in memory

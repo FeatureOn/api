@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/data/mongodb/dao"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/adapters/data/mongodb/dao"
+	"github.com/FeatureOn/api/domain"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

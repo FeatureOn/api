@@ -1,6 +1,6 @@
 package application
 
-import "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+import "github.com/FeatureOn/api/domain"
 
 // UpdateFeatureValue updates a Feature instance's value on its corresponding product and environment
 func (ps ProductService) UpdateFeatureValue(productID string, environmentID string, featureID string, value bool) error {

@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/application"
+	"github.com/FeatureOn/api/application"
 
 	"github.com/rs/zerolog/log"
 )

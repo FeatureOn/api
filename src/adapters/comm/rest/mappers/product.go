@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/adapters/comm/rest/dto"
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/domain"
 )
 
 // MapProduct2ProductResponse maps domain Product to dto ProductResponse

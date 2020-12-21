@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"unicode"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/domain"
 )
 
 // UserRepository is the interface to interact with User domain object

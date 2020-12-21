@@ -1,6 +1,6 @@
 package application
 
-import "dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+import "github.com/FeatureOn/api/domain"
 
 // ProductRepository is the interface to interact with Product domain object
 type ProductRepository interface {

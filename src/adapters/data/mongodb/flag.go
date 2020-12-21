@@ -3,7 +3,7 @@ package mongodb
 import (
 	"errors"
 
-	"dev.azure.com/serdarkalayci-github/Toggler/_git/toggler-api/domain"
+	"github.com/FeatureOn/api/domain"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
