@@ -26,13 +26,8 @@ func (hr HealthRepository) Ready() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err := hr.dbClient.Connect(ctx)
-	if err != nil {
-		log.Error().Err(err).Msgf("An error occured while connecting to tha database")
-		return false
-	}
 	// Check the connection
-	err = hr.dbClient.Ping(context.TODO(), nil)
+	err := hr.dbClient.Ping(ctx, nil)
 	if err != nil {
 		log.Error().Err(err).Msg("An error occured while connecting to tha database")
 		return false

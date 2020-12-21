@@ -25,14 +25,14 @@ func NewDataContext() DataContext {
 	// We try to get connectionstring value from the environment variables, if not found it falls back to local database
 	connectionString := os.Getenv("ConnectionString")
 	if connectionString == "" {
-		connectionString = "mongodb+srv://toggleruser:toggpassler@toggler.au80d.mongodb.net/<dbname>?retryWrites=true&w=majority"
+		connectionString = "mongodb://localhost:27017/featureon"
 		log.Info().Msg("ConnectionString from Env not found, falling back to local DB")
 	} else {
 		log.Info().Msgf("ConnectionString from Env is used: '%s'", connectionString)
 	}
 	databaseName := os.Getenv("DatabaseName")
 	if databaseName == "" {
-		databaseName = "toggler"
+		databaseName = "featureon"
 		log.Info().Msg("DatabaseName from Env not found, falling back to default")
 	} else {
 		log.Info().Msgf("DatabaseName from Env is used: '%s'", databaseName)
@@ -42,9 +42,8 @@ func NewDataContext() DataContext {
 	if err != nil {
 		log.Error().Err(err).Msgf("An error occured while connecting to tha database")
 	} else {
-
 		// Check the connection
-		err = client.Ping(context.TODO(), nil)
+		err = client.Ping(ctx, nil)
 
 		if err != nil {
 			log.Error().Err(err).Msg("An error occured while connecting to tha database")

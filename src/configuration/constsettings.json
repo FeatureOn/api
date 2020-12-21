@@ -3,6 +3,7 @@
         "CannotReadPayloadMsg": "Cannot reead payload",
         "PayloadMissingMsg": "Payload is missing",
         "CannotParsePayloadMsg": "Cannot parse payload",
-        "UsersCollection": "users"
+        "UsersCollection": "users",
+        "ProductsCollection": "products"
     }
 }
