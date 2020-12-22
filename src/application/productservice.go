@@ -10,7 +10,7 @@ type ProductRepository interface {
 	GetProducts() ([]domain.Product, error)
 	GetProduct(id string) (domain.Product, error)
 	AddEnvironment(product domain.Product, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error)
-	Updatenvironment(product domain.Product, environmentID string, environmentName string) error
+	UpdateEnvironment(product domain.Product, environmentID string, environmentName string) error
 	AddFeature(product domain.Product, feature domain.Feature, envFlags []domain.EnvironmentFlag) (string, error)
 	UpdateFeature(product domain.Product, feature domain.Feature) error
 	DisableFeature(product domain.Product, feature domain.Feature) error

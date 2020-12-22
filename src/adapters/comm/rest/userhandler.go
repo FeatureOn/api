@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type ValidatedUser struct{}
+type validatedUser struct{}
 
 // swagger:route GET /user/{id} User GetUser
 // Return the user if found
@@ -43,8 +43,8 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 // AddUser creates a new user on the system
 func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 	// Get user data from oayload
-	userDTO := r.Context().Value(ValidatedUser{}).(dto.UserRequest)
-	user := mappers.MapUserRequest2User(userDTO)
+	userDTO := r.Context().Value(validatedUser{}).(dto.AddUserRequest)
+	user := mappers.MapAddUserRequest2User(userDTO)
 	userService := application.NewUserService(ctx.userRepo)
 	err := userService.AddUser(user)
 	if err == nil {
@@ -55,7 +55,7 @@ func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 // MiddlewareValidateNewUser Checks the integrity of new user in the request and calls next if ok
 func (ctx *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		user, err := middleware.ExtractUserPayload(r)
+		user, err := middleware.ExtractAddUserPayload(r)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			return
@@ -71,7 +71,7 @@ func (ctx *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler
 		}
 
 		// add the rating to the context
-		ctx := context.WithValue(r.Context(), ValidatedUser{}, *user)
+		ctx := context.WithValue(r.Context(), validatedUser{}, *user)
 		r = r.WithContext(ctx)
 
 		// Call the next handler, which can be another middleware in the chain, or the final handler.

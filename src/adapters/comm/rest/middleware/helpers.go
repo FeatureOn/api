@@ -42,14 +42,30 @@ func readPayload(r *http.Request) (payload []byte, e error) {
 	return
 }
 
-// ExtractUserPayload extracts user data from the request body
+// ExtractAddUserPayload extracts user data from the request body
 // Returns UserRequest model if found, error otherwise
-func ExtractUserPayload(r *http.Request) (user *dto.UserRequest, e error) {
+func ExtractAddUserPayload(r *http.Request) (user *dto.AddUserRequest, e error) {
 	payload, e := readPayload(r)
 	if e != nil {
 		return
 	}
 	err := json.Unmarshal(payload, &user)
+	if err != nil {
+		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
+		return
+	}
+	return
+}
+
+// ExtractAddEnvironmentPayload extracts AddEnvironmentRequest data from the request body
+// Returns AddEnvironmentRequest model if found, error otherwise
+func ExtractAddEnvironmentPayload(r *http.Request) (env *dto.AddEnvironmentRequest, e error) {
+	payload, e := readPayload(r)
+	if e != nil {
+		return
+	}
+	err := json.Unmarshal(payload, &env)
 	if err != nil {
 		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
 		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))

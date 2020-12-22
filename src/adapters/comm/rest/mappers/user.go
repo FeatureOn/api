@@ -5,10 +5,9 @@ import (
 	"github.com/FeatureOn/api/domain"
 )
 
-// MapUserRequest2User maps dto UserRequest to domain User
-func MapUserRequest2User(ur dto.UserRequest) domain.User {
+// MapAddUserRequest2User maps dto UserRequest to domain User
+func MapAddUserRequest2User(ur dto.AddUserRequest) domain.User {
 	return domain.User{
-		ID:       ur.ID,
 		Name:     ur.Name,
 		UserName: ur.UserName,
 		Password: ur.Password,

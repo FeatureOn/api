@@ -1,8 +1,15 @@
 package dto
 
-// UserRequest type defines a model for adding or updating an user
-type UserRequest struct {
-	ID       string `json:"id"`
+// AddUserRequest type defines a model for adding an user
+type AddUserRequest struct {
+	Name     string `json:"name" validate:"required"`
+	UserName string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+// UpdateUserRequest type defines a model for updating an user
+type UpdateUserRequest struct {
+	ID       string `json:"id" validate:"required"`
 	Name     string `json:"name" validate:"required"`
 	UserName string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`

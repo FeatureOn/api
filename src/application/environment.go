@@ -58,5 +58,5 @@ func (ps ProductService) UpdateEnvironment(productID string, environmentID strin
 			return errors.New("The environment name is not available")
 		}
 	}
-	return ps.productRepository.Updatenvironment(product, environmentID, environmentName)
+	return ps.productRepository.UpdateEnvironment(product, environmentID, environmentName)
 }
