@@ -29,7 +29,7 @@ func newProductRepository(client *mongo.Client, databaseName string) ProductRepo
 	}
 }
 
-// GetProduct retprns one Product with the given ID if it exists in the array, retprns not found error otherwise
+// GetProduct retprns one Product with the given ID if it exists in the array, returns not found error otherwise
 func (pr ProductRepository) GetProduct(ID string) (domain.Product, error) {
 	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -48,6 +48,7 @@ func (pr ProductRepository) GetProduct(ID string) (domain.Product, error) {
 	return mappers.MapProductDAO2Product(ProductDAO), nil
 }
 
+// GetProducts returns an array of all products defined in the database
 func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
 	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -71,18 +72,25 @@ func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
 	return products, nil
 }
 
+// GetProductByName returnd the ID of the product if the name matches a product in the database, returns empty string and error otherwise
 func (pr ProductRepository) GetProductByName(productName string) (string, error) {
 	return "", errors.New("Not implemented")
 }
+
+// AddProduct adds a new product to the database and returns its ID, returns empty string and error otherwise
 func (pr ProductRepository) AddProduct(productName string) (string, error) {
 	return "", errors.New("Not implemented")
 
 }
+
+// UpdateProduct updates a product on the database, returns error otherwise
 func (pr ProductRepository) UpdateProduct(productID string, productName string) error {
 	return errors.New("Not implemented")
 
 }
 
+// AddEnvironment adds a new environment together with all its flags with default values and returns its ID,
+// returns empty string and error otherwise
 func (pr ProductRepository) AddEnvironment(product domain.Product, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error) {
 	productDAO := mappers.MapProduct2ProductDAO(product)
 	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
@@ -108,20 +116,23 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 	}
 }
 
-func (pr ProductRepository) Updatenvironment(product domain.Product, environmentID string, environmentName string) error {
+// UpdateEnvironment updates an existing environment on the database
+func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmentID string, environmentName string) error {
 	return errors.New("Not implemented")
-
 }
 
+// AddFeature adds a new feature to an existing product on the database together with flags for all environments
+// od the product with default values. Returns ID if successful, empty string and error otherwise
 func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Feature, envFlags []domain.EnvironmentFlag) (string, error) {
 	return "", errors.New("Not implemented")
-
 }
+
+// UpdateFeature updates an existing Feature on the database. Returns error if not successful
 func (pr ProductRepository) UpdateFeature(product domain.Product, feat domain.Feature) error {
 	return errors.New("Not implemented")
-
 }
+
+// DisableFeature disables an existing Feature on the database. Returns error if not successful
 func (pr ProductRepository) DisableFeature(product domain.Product, feat domain.Feature) error {
 	return errors.New("Not implemented")
-
 }

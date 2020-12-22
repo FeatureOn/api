@@ -20,14 +20,12 @@ func newFlagRepository(client *mongo.Client, databaseName string) FlagRepository
 	}
 }
 
-func (fr FlagRepository) AddFlag(environmentID string, FeatureID string, value bool) error {
-	return errors.New("Not implemented")
-}
-
+// GetFlags gets values of all active flags for a given environment
 func (fr FlagRepository) GetFlags(environmentID string) ([]domain.Flag, error) {
 	return nil, errors.New("Not implemented")
 }
 
+// UpdateFlag sets new value to a spesific flag
 func (fr FlagRepository) UpdateFlag(productID string, environmentID string, featureID string, value bool) error {
 	return errors.New("Not implemented")
 
