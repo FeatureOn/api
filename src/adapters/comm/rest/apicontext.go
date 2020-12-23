@@ -110,6 +110,7 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	getPR.HandleFunc("/product/{id}", apiContext.GetProduct)
 	getPR.HandleFunc("/product", apiContext.GetProducts)
 	postER := sm.Methods(http.MethodPost).Subrouter() // Environment subrouter for POST method
+	postER.Use(apiContext.MiddlewareValidateNewEnvironment)
 	postER.HandleFunc("/environment", apiContext.AddEnvironment)
 	// handler for documentation
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}

@@ -102,14 +102,19 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 		Name: environmentName,
 	}
 	productDAO.Environments = append(productDAO.Environments, newEnv)
-	idDoc := bson.D{{"_id", product.ID}}
+	idDoc := bson.D{{"_id", productDAO.ID}}
 
-	upDoc := bson.D{{"$set", bson.M{"environments": product.Environments}}}
+	upDoc := bson.D{{"$set", bson.M{"environments": productDAO.Environments}}}
 	var updateOpts options.UpdateOptions
 	updateOpts.SetUpsert(false)
-	_, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+	result, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
 	if err == nil {
-		return newEnvID.Hex(), nil
+		if result.MatchedCount == 1 {
+			return newEnvID.Hex(), nil
+		} else {
+			log.Error().Err(err).Msgf("The productID %s did not match any products in the database", product.ID)
+			return "", errors.New("Product not found")
+		}
 	} else {
 		log.Error().Err(err).Msgf("Error adding environment with name %s", environmentName)
 		return "", err
