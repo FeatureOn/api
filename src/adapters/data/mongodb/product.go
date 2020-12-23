@@ -129,7 +129,29 @@ func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmen
 // AddFeature adds a new feature to an existing product on the database together with flags for all environments
 // od the product with default values. Returns ID if successful, empty string and error otherwise
 func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Feature, envFlags []domain.EnvironmentFlag) (string, error) {
-	return "", errors.New("Not implemented")
+	productDAO := mappers.MapProduct2ProductDAO(product)
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	newFeat := mappers.MapFeature2FeatureDAO(feat)
+	productDAO.Features = append(productDAO.Features, newFeat)
+	idDoc := bson.D{{"_id", productDAO.ID}}
+
+	upDoc := bson.D{{"$set", bson.M{"features": productDAO.Features}}}
+	var updateOpts options.UpdateOptions
+	updateOpts.SetUpsert(false)
+	result, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+	if err == nil {
+		if result.MatchedCount == 1 {
+			return newFeat.Key, nil
+		} else {
+			log.Error().Err(err).Msgf("The productID %s did not match any products in the database", product.ID)
+			return "", errors.New("Product not found")
+		}
+	} else {
+		log.Error().Err(err).Msgf("Error adding feature with key %s", newFeat.Key)
+		return "", err
+	}
 }
 
 // UpdateFeature updates an existing Feature on the database. Returns error if not successful

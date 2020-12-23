@@ -57,3 +57,25 @@ func MapProduct2ProductDAO(product domain.Product) dao.ProductDAO {
 	}
 	return productDAO
 }
+
+// MapFeature2FeatureDAO maps domain Feature to dao FeatureDAO
+func MapFeature2FeatureDAO(feat domain.Feature) dao.FeatureDAO {
+	return dao.FeatureDAO{
+		Key:          feat.Key,
+		Name:         feat.Name,
+		Description:  feat.Description,
+		DefaultState: feat.DefaultState,
+		Active:       feat.Active,
+	}
+}
+
+// MapFeatureDAO2Feature maps dao FeatureDAO to domain Feature
+func MapFeatureDAO2Feature(feat dao.FeatureDAO) domain.Feature {
+	return domain.Feature{
+		Key:          feat.Key,
+		Name:         feat.Name,
+		Description:  feat.Description,
+		DefaultState: feat.DefaultState,
+		Active:       feat.Active,
+	}
+}
