@@ -89,3 +89,19 @@ func ExtractLoginPayload(r *http.Request) (login *dto.LoginRequest, e error) {
 	}
 	return
 }
+
+// ExtractAddFeaturePayload extracts AddFeature data from the request body
+// Returns AddFeatureRequest model if found, error otherwise
+func ExtractAddFeaturePayload(r *http.Request) (env *dto.AddFeatureRequest, e error) {
+	payload, e := readPayload(r)
+	if e != nil {
+		return
+	}
+	err := json.Unmarshal(payload, &env)
+	if err != nil {
+		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
+		return
+	}
+	return
+}

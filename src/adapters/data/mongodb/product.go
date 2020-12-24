@@ -110,6 +110,10 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 	result, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
 	if err == nil {
 		if result.MatchedCount == 1 {
+			// Add the flags for the new environment
+			flagCollection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("FlagsCollection"))
+			environmentFlag.EnvironmentID = newEnvID.Hex()
+			_, err = flagCollection.InsertOne(ctx, mappers.MapEnvironmentFlag2EnvironmentFlagDAO(environmentFlag))
 			return newEnvID.Hex(), nil
 		} else {
 			log.Error().Err(err).Msgf("The productID %s did not match any products in the database", product.ID)

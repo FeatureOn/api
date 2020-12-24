@@ -39,10 +39,10 @@ func (ctx *APIContext) MiddlewareValidateNewEnvironment(next http.Handler) http.
 			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		// validate the user
+		// validate the environment
 		errs := ctx.validation.Validate(env)
 		if errs != nil && len(errs) != 0 {
-			log.Error().Err(errs[0]).Msg("Error validating the user")
+			log.Error().Err(errs[0]).Msg("Error validating the environment")
 
 			// return the validation messages as an array
 			respondWithJSON(rw, r, http.StatusUnprocessableEntity, errs.Errors())
