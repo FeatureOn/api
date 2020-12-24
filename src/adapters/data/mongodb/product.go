@@ -140,13 +140,20 @@ func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Featu
 	newFeat := mappers.MapFeature2FeatureDAO(feat)
 	productDAO.Features = append(productDAO.Features, newFeat)
 	idDoc := bson.D{{"_id", productDAO.ID}}
-
 	upDoc := bson.D{{"$set", bson.M{"features": productDAO.Features}}}
 	var updateOpts options.UpdateOptions
 	updateOpts.SetUpsert(false)
 	result, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
 	if err == nil {
 		if result.MatchedCount == 1 {
+			collection = pr.dbClient.Database(pr.dbName).Collection(viper.GetString("FlagsCollection"))
+			for _, envFlag := range envFlags {
+				idDoc := bson.D{{"environmentID", envFlag.EnvironmentID}}
+				upDoc := bson.D{{"$push", bson.M{"flags": envFlag.Flags[0]}}}
+				var updateOpts options.UpdateOptions
+				updateOpts.SetUpsert(true)
+				result, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+			}
 			return newFeat.Key, nil
 		} else {
 			log.Error().Err(err).Msgf("The productID %s did not match any products in the database", product.ID)
