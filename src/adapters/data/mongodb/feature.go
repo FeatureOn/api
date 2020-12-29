@@ -10,40 +10,63 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
 // AddFeature adds a new feature to an existing product on the database together with flags for all environments
 // od the product with default values. Returns ID if successful, empty string and error otherwise
 func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Feature, envFlags []domain.EnvironmentFlag) (string, error) {
 	productDAO := mappers.MapProduct2ProductDAO(product)
-	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	wcMajority := writeconcern.New(writeconcern.WMajority(), writeconcern.WTimeout(1*time.Second))
+	wcMajorityCollectionOpts := options.Collection().SetWriteConcern(wcMajority)
+	productCollection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"), wcMajorityCollectionOpts)
+	flagCollection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("FlagsCollection"), wcMajorityCollectionOpts)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	newFeat := mappers.MapFeature2FeatureDAO(feat)
 	productDAO.Features = append(productDAO.Features, newFeat)
-	idDoc := bson.D{{"_id", productDAO.ID}}
-	upDoc := bson.D{{"$set", bson.M{"features": productDAO.Features}}}
-	var updateOpts options.UpdateOptions
-	updateOpts.SetUpsert(false)
-	result, err := collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
-	if err == nil {
-		if result.MatchedCount == 1 {
-			collection = pr.dbClient.Database(pr.dbName).Collection(viper.GetString("FlagsCollection"))
-			for _, envFlag := range envFlags {
-				idDoc := bson.D{{"environmentID", envFlag.EnvironmentID}}
-				upDoc := bson.D{{"$push", bson.M{"flags": envFlag.Flags[0]}}}
-				var updateOpts options.UpdateOptions
-				updateOpts.SetUpsert(true)
-				result, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
-			}
-			return newFeat.Key, nil
+
+	// Step 1: Define the callback that specifies the sequence of operations to perform inside the transaction.
+	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
+		// Important: You must pass sessCtx as the Context parameter to the operations for them to be executed in the
+		// transaction.
+		idDoc := bson.D{{"_id", productDAO.ID}}
+		upDoc := bson.D{{"$push", bson.M{"features": newFeat}}}
+		var updateOpts options.UpdateOptions
+		updateOpts.SetUpsert(false)
+
+		if _, err := productCollection.UpdateOne(sessCtx, idDoc, upDoc, &updateOpts); err != nil {
+			return nil, err
 		}
-		log.Error().Err(err).Msgf("The productID %s did not match any products in the database", product.ID)
-		return "", errors.New("Product not found")
+
+		for _, envFlag := range envFlags {
+			idDoc := bson.D{{"environmentID", envFlag.EnvironmentID}}
+			upDoc := bson.D{{"$push", bson.M{"flags": envFlag.Flags[0]}}}
+			var updateOpts options.UpdateOptions
+			updateOpts.SetUpsert(true)
+			if _, err := flagCollection.UpdateOne(sessCtx, idDoc, upDoc, &updateOpts); err != nil {
+				return nil, err
+			}
+		}
+
+		return nil, nil
 	}
-	log.Error().Err(err).Msgf("Error adding feature with key %s", newFeat.Key)
-	return "", err
+	// Step 2: Start a session and run the callback using WithTransaction.
+	session, err := pr.dbClient.StartSession()
+	if err != nil {
+		panic(err)
+	}
+	defer session.EndSession(ctx)
+
+	result, err := session.WithTransaction(ctx, callback)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error adding feature with key %s", newFeat.Key)
+		return "", err
+	}
+	log.Info().Msgf("result: %v\n", result)
+	return newFeat.Key, nil
 }
 
 // UpdateFeature updates an existing Feature on the database. Returns error if not successful
