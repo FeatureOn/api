@@ -25,7 +25,7 @@ func NewDataContext() DataContext {
 	// We try to get connectionstring value from the environment variables, if not found it falls back to local database
 	connectionString := os.Getenv("ConnectionString")
 	if connectionString == "" {
-		connectionString = "mongodb://localhost:27017/featureon"
+		connectionString = "mongodb://root:password123@mongodb-primary:27017/?replicaSet=replicaset"
 		log.Info().Msg("ConnectionString from Env not found, falling back to local DB")
 	} else {
 		log.Info().Msgf("ConnectionString from Env is used: '%s'", connectionString)
