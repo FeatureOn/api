@@ -261,7 +261,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"productID\": \"5fdcce9642085108206e5fed\",\n    \"name\": \"Globalization\",\n    \"key\": \"g18n\",\n    \"description\": \"Features to support multi cultures and multi languages on the product\",\n    \"defaultstate\": false\n}",
+					"raw": "{\n    \"productID\": \"5fdcce9642085108206e5fed\",\n    \"name\": \"Globalization\",\n    \"key\": \"g18n\",\n    \"description\": \"Features to support multi cultures and multi languages on the product\",\n    \"defaultstate\": false\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -277,6 +277,62 @@
 					"port": "5500",
 					"path": [
 						"feature"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Feature 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productID\": \"5fdcce9642085108206e5fed\",\n    \"name\": \"Facebook Integration\",\n    \"key\": \"fbint\",\n    \"description\": \"Integration with Facebook API to support Facebook login\",\n    \"defaultstate\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/feature",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"feature"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Third product\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"product"
 					]
 				}
 			},
