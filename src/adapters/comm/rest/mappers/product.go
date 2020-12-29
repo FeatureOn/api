@@ -5,8 +5,8 @@ import (
 	"github.com/FeatureOn/api/domain"
 )
 
-// MapProduct2ProductResponse maps domain Product to dto ProductResponse
-func MapProduct2ProductResponse(products []domain.Product) []dto.ProductResponse {
+// MapProducts2ProductResponses maps domain Product to dto ProductResponse
+func MapProducts2ProductResponses(products []domain.Product) []dto.ProductResponse {
 	productResponses := make([]dto.ProductResponse, 0)
 	for _, product := range products {
 		productResponses = append(productResponses, dto.ProductResponse{
@@ -39,4 +39,19 @@ func MapProduct2ProductDetailResponse(product domain.Product) dto.ProductDetailR
 		})
 	}
 	return productDetailResponse
+}
+
+// MapAddProductRequest2Request maps dto AddProductRequest to domain Product
+func MapAddProductRequest2Request(product dto.AddProductRequest) domain.Product {
+	return domain.Product{
+		Name: product.Name,
+	}
+}
+
+// CreateSimpleProductResponse creates a ProductResponse with the given ID and Name
+func CreateSimpleProductResponse(id string, name string) dto.ProductResponse {
+	return dto.ProductResponse{
+		ID:   id,
+		Name: name,
+	}
 }

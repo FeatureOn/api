@@ -12,6 +12,12 @@ type ProductDAO struct {
 	Features     []FeatureDAO       `bson:"features"`
 }
 
+// NewProductDAO represents the struct of Product type when it's first to be stored in mongoDB
+type NewProductDAO struct {
+	ID   primitive.ObjectID `bson:"_id"`
+	Name string             `bson:"name"`
+}
+
 // FeatureDAO is a basic flag (as for now) holding a key within a project and its default state
 type FeatureDAO struct {
 	Name         string `bson:"name"`

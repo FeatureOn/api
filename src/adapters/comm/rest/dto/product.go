@@ -14,6 +14,11 @@ type ProductDetailResponse struct {
 	Environments []EnvironmentResponse
 }
 
+// AddProductRequest represents a product type used to insert a new product
+type AddProductRequest struct {
+	Name string `json:"name" validate:"required"`
+}
+
 // FeatureResponse is a basic flag (as for now) holding a key within a project and its default state
 type FeatureResponse struct {
 	Name         string

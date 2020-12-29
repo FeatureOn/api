@@ -71,14 +71,35 @@ func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
 	return products, nil
 }
 
-// GetProductByName returnd the ID of the product if the name matches a product in the database, returns empty string and error otherwise
+// GetProductByName returns the ID of the product if the name matches a product in the database, returns empty string and error otherwise
 func (pr ProductRepository) GetProductByName(productName string) (string, error) {
-	return "", errors.New("Not implemented")
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	var productDAO dao.ProductDAO
+	collection.FindOne(ctx, bson.M{"name": productName}).Decode(&productDAO) /// ToDo: Add projection here
+	if productDAO.Name == productName {
+		return "", errors.New("Product name is already in use")
+	}
+	return "", nil
 }
 
 // AddProduct adds a new product to the database and returns its ID, returns empty string and error otherwise
 func (pr ProductRepository) AddProduct(productName string) (string, error) {
-	return "", errors.New("Not implemented")
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	newProdID := primitive.NewObjectID()
+	newProduct := dao.NewProductDAO{
+		ID:   newProdID,
+		Name: productName,
+	}
+	_, err := collection.InsertOne(ctx, newProduct)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error adding product with name %s", productName)
+		return "", errors.New("Error adding product")
+	}
+	return newProdID.Hex(), nil
 
 }
 

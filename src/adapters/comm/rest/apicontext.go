@@ -93,32 +93,40 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 
 	// handlers for API
 	getR := sm.Methods(http.MethodGet).Subrouter()
+	// Generic handlers
 	getR.HandleFunc("/", apiContext.Index)
 	getR.HandleFunc("/version", apiContext.Version)
 	getR.HandleFunc("/health/live", apiContext.Live)
 	getR.HandleFunc("/health/ready", apiContext.Ready)
+	// User handlers
 	getR.HandleFunc("/user/{id}", apiContext.GetUser)
 	postUR := sm.Methods(http.MethodPost).Subrouter() // User subrouter for POST method
 	postUR.Use(apiContext.MiddlewareValidateNewUser)
 	postUR.HandleFunc("/user", apiContext.AddUser)
+	// Login handlers
 	putLR := sm.Methods(http.MethodPut).Subrouter() // Login subrouter for PUT method
 	putLR.Use(apiContext.MiddlewareValidateLoginRequest)
 	putLR.HandleFunc("/login", apiContext.Login)
 	putRR := sm.Methods(http.MethodPut).Subrouter() // Refresh subrouter for PUT method
 	putRR.HandleFunc("/login/refresh", apiContext.Refresh)
+	// Product handlers
 	getPR := sm.Methods(http.MethodGet).Subrouter() // Product subrouter for GET method
 	getPR.HandleFunc("/product/{id}", apiContext.GetProduct)
 	getPR.HandleFunc("/product", apiContext.GetProducts)
+	postPR := sm.Methods(http.MethodPost).Subrouter() // Product subrouter for POST method
+	postPR.Use(apiContext.MiddlewareValidateNewProduct)
+	postPR.HandleFunc("/product", apiContext.AddProduct)
+	// Environment handlers
 	postER := sm.Methods(http.MethodPost).Subrouter() // Environment subrouter for POST method
 	postER.Use(apiContext.MiddlewareValidateNewEnvironment)
 	postER.HandleFunc("/environment", apiContext.AddEnvironment)
+	// Feature handlers
 	postFR := sm.Methods(http.MethodPost).Subrouter() // Feature subrouter for POST method
 	postFR.Use(apiContext.MiddlewareValidateNewFeature)
 	postFR.HandleFunc("/feature", apiContext.AddFeature)
-	// handler for documentation
+	// Documentation handler
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := openapimw.Redoc(opts, nil)
-
 	getR.Handle("/docs", sh)
 	getR.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
