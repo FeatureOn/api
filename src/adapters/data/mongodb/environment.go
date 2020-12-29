@@ -33,14 +33,13 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 		ID:   newEnvID,
 		Name: environmentName,
 	}
-	productDAO.Environments = append(productDAO.Environments, newEnv)
 
 	// Step 1: Define the callback that specifies the sequence of operations to perform inside the transaction.
 	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
 		// Important: You must pass sessCtx as the Context parameter to the operations for them to be executed in the
 		// transaction.
 		idDoc := bson.D{{"_id", productDAO.ID}}
-		upDoc := bson.D{{"$set", bson.M{"environments": productDAO.Environments}}}
+		upDoc := bson.D{{"$push", bson.M{"environments": newEnv}}}
 		var updateOpts options.UpdateOptions
 		updateOpts.SetUpsert(false)
 
@@ -68,7 +67,7 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 		return "", err
 	}
 	log.Info().Msgf("result: %v\n", result)
-	return "ok", nil
+	return newEnvID.Hex(), nil
 }
 
 // UpdateEnvironment updates an existing environment on the database
