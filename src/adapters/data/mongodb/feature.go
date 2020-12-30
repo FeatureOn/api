@@ -32,8 +32,8 @@ func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Featu
 	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
 		// Important: You must pass sessCtx as the Context parameter to the operations for them to be executed in the
 		// transaction.
-		idDoc := bson.D{{"_id", productDAO.ID}}
-		upDoc := bson.D{{"$push", bson.M{"features": newFeat}}}
+		idDoc := bson.D{{Key: "_id", Value: productDAO.ID}}
+		upDoc := bson.D{{Key: "$push", Value: bson.M{"features": newFeat}}}
 		var updateOpts options.UpdateOptions
 		updateOpts.SetUpsert(false)
 
@@ -42,8 +42,8 @@ func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Featu
 		}
 
 		for _, envFlag := range envFlags {
-			idDoc := bson.D{{"environmentID", envFlag.EnvironmentID}}
-			upDoc := bson.D{{"$push", bson.M{"flags": envFlag.Flags[0]}}}
+			idDoc := bson.D{{Key: "environmentID", Value: envFlag.EnvironmentID}}
+			upDoc := bson.D{{Key: "$push", Value: bson.M{"flags": envFlag.Flags[0]}}}
 			var updateOpts options.UpdateOptions
 			updateOpts.SetUpsert(true)
 			if _, err := flagCollection.UpdateOne(sessCtx, idDoc, upDoc, &updateOpts); err != nil {

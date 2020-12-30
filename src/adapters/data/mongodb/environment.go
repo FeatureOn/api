@@ -38,8 +38,8 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 	callback := func(sessCtx mongo.SessionContext) (interface{}, error) {
 		// Important: You must pass sessCtx as the Context parameter to the operations for them to be executed in the
 		// transaction.
-		idDoc := bson.D{{"_id", productDAO.ID}}
-		upDoc := bson.D{{"$push", bson.M{"environments": newEnv}}}
+		idDoc := bson.D{{Key: "_id", Value: productDAO.ID}}
+		upDoc := bson.D{{Key: "$push", Value: bson.M{"environments": newEnv}}}
 		var updateOpts options.UpdateOptions
 		updateOpts.SetUpsert(false)
 
