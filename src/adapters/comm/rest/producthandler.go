@@ -67,16 +67,34 @@ func (ctx *APIContext) AddProduct(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:route PUT /product UpdateProduct UpdateProduct
+// Updates an existing product on the system
+// responses:
+//	200: OK
+//	404: errorResponse
+
+// UpdateProduct adds a new product to the system
+func (ctx *APIContext) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
+	// Get product data from payload
+	productDTO := r.Context().Value(validatedProduct{}).(dto.UpdateProductRequest)
+	//environment := mappers.MapAddEnvironmentRequest2Environment(environmentDTO)
+	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	err := productService.UpdateProduct(productDTO.ID, productDTO.Name)
+	if err == nil {
+		respondWithJSON(rw, r, 200, mappers.CreateSimpleProductResponse(productDTO.ID, productDTO.Name))
+	}
+}
+
 // MiddlewareValidateNewProduct Checks the integrity of new product in the request and calls next if ok
 func (ctx *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		env, err := middleware.ExtractAddProductPayload(r)
+		prod, err := middleware.ExtractAddProductPayload(r)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		// validate the product
-		errs := ctx.validation.Validate(env)
+		errs := ctx.validation.Validate(prod)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the product")
 
@@ -86,7 +104,34 @@ func (ctx *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Hand
 		}
 
 		// add the rating to the context
-		ctx := context.WithValue(r.Context(), validatedProduct{}, *env)
+		ctx := context.WithValue(r.Context(), validatedProduct{}, *prod)
+		r = r.WithContext(ctx)
+
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(rw, r)
+	})
+}
+
+// MiddlewareValidateUpdateProduct Checks the integrity of product to be updated in the request and calls next if ok
+func (ctx *APIContext) MiddlewareValidateUpdateProduct(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		prod, err := middleware.ExtractUpdateProductPayload(r)
+		if err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		// validate the product
+		errs := ctx.validation.Validate(prod)
+		if errs != nil && len(errs) != 0 {
+			log.Error().Err(errs[0]).Msg("Error validating the product")
+
+			// return the validation messages as an array
+			respondWithJSON(rw, r, http.StatusUnprocessableEntity, errs.Errors())
+			return
+		}
+
+		// add the rating to the context
+		ctx := context.WithValue(r.Context(), validatedProduct{}, *prod)
 		r = r.WithContext(ctx)
 
 		// Call the next handler, which can be another middleware in the chain, or the final handler.

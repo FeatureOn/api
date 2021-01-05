@@ -19,6 +19,12 @@ type AddProductRequest struct {
 	Name string `json:"name" validate:"required"`
 }
 
+// UpdateProductRequest represents a product type used to update an existing product
+type UpdateProductRequest struct {
+	ID   string `json:"id" validate:"required"`
+	Name string `json:"name" validate:"required"`
+}
+
 // FeatureResponse is a basic flag (as for now) holding a key within a project and its default state
 type FeatureResponse struct {
 	Name         string

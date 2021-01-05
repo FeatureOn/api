@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ProductRepository represent a structpre that will communicate to MongoDB to accomplish product related transactions
@@ -76,12 +77,12 @@ func (pr ProductRepository) GetProductByName(productName string) (string, error)
 	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	var productDAO dao.ProductDAO
-	collection.FindOne(ctx, bson.M{"name": productName}).Decode(&productDAO) /// ToDo: Add projection here
-	if productDAO.Name == productName {
-		return "", errors.New("Product name is already in use")
+	var productDAO dao.NewProductDAO
+	err := collection.FindOne(ctx, bson.M{"name": productName}, options.FindOne().SetProjection(bson.M{"_id": 1})).Decode(&productDAO)
+	if err != nil {
+		return "", errors.New("Error checking product name authenticity")
 	}
-	return "", nil
+	return productDAO.ID.Hex(), nil
 }
 
 // AddProduct adds a new product to the database and returns its ID, returns empty string and error otherwise
@@ -105,6 +106,22 @@ func (pr ProductRepository) AddProduct(productName string) (string, error) {
 
 // UpdateProduct updates a product on the database, returns error otherwise
 func (pr ProductRepository) UpdateProduct(productID string, productName string) error {
-	return errors.New("Not implemented")
-
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	id, err := primitive.ObjectIDFromHex(productID)
+	if err != nil {
+		log.Error().Err(err).Msgf("Cannot parse productID: %s into ObjectID", productID)
+		return errors.New("ProductID format is not as expected")
+	}
+	idDoc := bson.D{{Key: "_id", Value: id}}
+	upDoc := bson.D{{Key: "name", Value: productName}}
+	var updateOpts options.UpdateOptions
+	updateOpts.SetUpsert(false)
+	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error updating the product with productID: %s", productID)
+		return errors.New("Error updating the product")
+	}
+	return nil
 }

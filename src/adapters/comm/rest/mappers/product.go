@@ -48,6 +48,14 @@ func MapAddProductRequest2Request(product dto.AddProductRequest) domain.Product 
 	}
 }
 
+// MapUpdateProductRequest2Request maps dto UpdateProductRequest to domain Product
+func MapUpdateProductRequest2Request(product dto.UpdateProductRequest) domain.Product {
+	return domain.Product{
+		ID:   product.ID,
+		Name: product.Name,
+	}
+}
+
 // CreateSimpleProductResponse creates a ProductResponse with the given ID and Name
 func CreateSimpleProductResponse(id string, name string) dto.ProductResponse {
 	return dto.ProductResponse{
