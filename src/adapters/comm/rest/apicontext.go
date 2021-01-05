@@ -116,6 +116,9 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	postPR := sm.Methods(http.MethodPost).Subrouter() // Product subrouter for POST method
 	postPR.Use(apiContext.MiddlewareValidateNewProduct)
 	postPR.HandleFunc("/product", apiContext.AddProduct)
+	putPR := sm.Methods(http.MethodPut).Subrouter() // Product subrouter for PUT method
+	putPR.Use(apiContext.MiddlewareValidateUpdateProduct)
+	putPR.HandleFunc("/product", apiContext.UpdateProduct)
 	// Environment handlers
 	postER := sm.Methods(http.MethodPost).Subrouter() // Environment subrouter for POST method
 	postER.Use(apiContext.MiddlewareValidateNewEnvironment)
