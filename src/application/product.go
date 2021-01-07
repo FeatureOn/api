@@ -10,13 +10,9 @@ import (
 // AddProduct first checks the availability of the name because the system should not allow the same name used twice
 // if the name is unique, it adds a new product to the repository injected into ProductService
 func (ps ProductService) AddProduct(productName string) (string, error) {
-	existingID, err := ps.productRepository.GetProductByName(productName)
+	err := ps.checkProductName(productName)
 	if err != nil {
-		log.Error().Err(err).Msg("Error checking product name uniqueness")
 		return "", err
-	}
-	if existingID != "" {
-		return "", errors.New("The product name is not available")
 	}
 	return ps.productRepository.AddProduct(productName)
 }
@@ -24,15 +20,23 @@ func (ps ProductService) AddProduct(productName string) (string, error) {
 // UpdateProduct first checks the availability of the name because the system should not allow the same name used twice
 // if the name is unique, it adds a new product to the repository injected into ProductService
 func (ps ProductService) UpdateProduct(productID string, productName string) error {
+	err := ps.checkProductName(productName)
+	if err != nil {
+		return err
+	}
+	return ps.productRepository.UpdateProduct(productID, productName)
+}
+
+func (ps ProductService) checkProductName(productName string) error {
 	existingID, err := ps.productRepository.GetProductByName(productName)
 	if err != nil {
 		log.Error().Err(err).Msg("Error checking product name uniqueness")
 		return err
 	}
-	if existingID != productID {
+	if existingID != "000000000000000000000000" {
 		return errors.New("The product name is not available")
 	}
-	return ps.productRepository.UpdateProduct(productID, productName)
+	return nil
 }
 
 // GetProducts returns a the list of products from the repository injected into ProductService

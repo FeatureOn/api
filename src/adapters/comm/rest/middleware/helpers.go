@@ -74,6 +74,22 @@ func ExtractAddEnvironmentPayload(r *http.Request) (env *dto.AddEnvironmentReque
 	return
 }
 
+// ExtractUpdateEnvironmentPayload extracts UpdateEnvironmentRequest data from the request body
+// Returns UpdateEnvironmentRequest model if found, error otherwise
+func ExtractUpdateEnvironmentPayload(r *http.Request) (env *dto.UpdateEnvironmentRequest, e error) {
+	payload, e := readPayload(r)
+	if e != nil {
+		return
+	}
+	err := json.Unmarshal(payload, &env)
+	if err != nil {
+		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
+		return
+	}
+	return
+}
+
 // ExtractAddProductPayload extracts AddProductRequest data from the request body
 // Returns AddProductRequest model if found, error otherwise
 func ExtractAddProductPayload(r *http.Request) (prod *dto.AddProductRequest, e error) {

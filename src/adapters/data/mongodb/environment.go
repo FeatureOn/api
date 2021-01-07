@@ -72,5 +72,27 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 
 // UpdateEnvironment updates an existing environment on the database
 func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmentID string, environmentName string) error {
-	return errors.New("Not implemented")
+	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	id, err := primitive.ObjectIDFromHex(product.ID)
+	if err != nil {
+		log.Error().Err(err).Msgf("Cannot parse productID: %s into ObjectID", product.ID)
+		return errors.New("ProductID format is not as expected")
+	}
+	for _, env := range product.Environments {
+		if env.ID == environmentID {
+			env.Name = environmentName
+		}
+	}
+	idDoc := bson.D{{Key: "_id", Value: id}}
+	upDoc := bson.D{{Key: "environments", Value: product.Environments}}
+	var updateOpts options.UpdateOptions
+	updateOpts.SetUpsert(false)
+	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error updating the product with productID: %s", product.ID)
+		return errors.New("Error updating the product")
+	}
+	return nil
 }

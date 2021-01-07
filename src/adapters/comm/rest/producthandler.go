@@ -64,6 +64,8 @@ func (ctx *APIContext) AddProduct(rw http.ResponseWriter, r *http.Request) {
 	prodID, err := productService.AddProduct(productDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleProductResponse(prodID, productDTO.Name))
+	} else {
+		respondWithError(rw, r, 500, err.Error())
 	}
 }
 
@@ -82,6 +84,8 @@ func (ctx *APIContext) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 	err := productService.UpdateProduct(productDTO.ID, productDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleProductResponse(productDTO.ID, productDTO.Name))
+	} else {
+		respondWithError(rw, r, 500, err.Error())
 	}
 }
 

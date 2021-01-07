@@ -79,7 +79,7 @@ func (pr ProductRepository) GetProductByName(productName string) (string, error)
 	defer cancel()
 	var productDAO dao.NewProductDAO
 	err := collection.FindOne(ctx, bson.M{"name": productName}, options.FindOne().SetProjection(bson.M{"_id": 1})).Decode(&productDAO)
-	if err != nil {
+	if err != nil && err.Error() != "mongo: no documents in result" {
 		return "", errors.New("Error checking product name authenticity")
 	}
 	return productDAO.ID.Hex(), nil
@@ -115,7 +115,7 @@ func (pr ProductRepository) UpdateProduct(productID string, productName string) 
 		return errors.New("ProductID format is not as expected")
 	}
 	idDoc := bson.D{{Key: "_id", Value: id}}
-	upDoc := bson.D{{Key: "name", Value: productName}}
+	upDoc := bson.D{{Key: "$set", Value: bson.M{"name": productName}}}
 	var updateOpts options.UpdateOptions
 	updateOpts.SetUpsert(false)
 	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
