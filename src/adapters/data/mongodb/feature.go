@@ -50,7 +50,6 @@ func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Featu
 				return nil, err
 			}
 		}
-
 		return nil, nil
 	}
 	// Step 2: Start a session and run the callback using WithTransaction.

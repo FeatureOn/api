@@ -123,6 +123,9 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	postER := sm.Methods(http.MethodPost).Subrouter() // Environment subrouter for POST method
 	postER.Use(apiContext.MiddlewareValidateNewEnvironment)
 	postER.HandleFunc("/environment", apiContext.AddEnvironment)
+	putER := sm.Methods(http.MethodPut).Subrouter() // Environment subrouter for POST method
+	putER.Use(apiContext.MiddlewareValidateUpdateEnvironment)
+	putER.HandleFunc("/environment", apiContext.UpdateEnvironment)
 	// Feature handlers
 	postFR := sm.Methods(http.MethodPost).Subrouter() // Feature subrouter for POST method
 	postFR.Use(apiContext.MiddlewareValidateNewFeature)

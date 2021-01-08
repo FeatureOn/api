@@ -80,13 +80,14 @@ func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmen
 		log.Error().Err(err).Msgf("Cannot parse productID: %s into ObjectID", product.ID)
 		return errors.New("ProductID format is not as expected")
 	}
-	for _, env := range product.Environments {
-		if env.ID == environmentID {
-			env.Name = environmentName
-		}
+	envID, err := primitive.ObjectIDFromHex(environmentID)
+	if err != nil {
+		log.Error().Err(err).Msgf("Cannot parse environmentID: %s into ObjectID", environmentID)
+		return errors.New("EnvronmentID format is not as expected")
 	}
-	idDoc := bson.D{{Key: "_id", Value: id}}
-	upDoc := bson.D{{Key: "environments", Value: product.Environments}}
+
+	idDoc := bson.M{"_id": id, "environments.id": envID}
+	upDoc := bson.D{{Key: "$set", Value: bson.M{"environments.$.name": environmentName}}}
 	var updateOpts options.UpdateOptions
 	updateOpts.SetUpsert(false)
 	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)

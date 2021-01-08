@@ -28,6 +28,8 @@ func (ctx *APIContext) AddFeature(rw http.ResponseWriter, r *http.Request) {
 	_, err := productService.AddFeature(featureDTO.ProductID, feature)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapFeature2FeatureResponse(feature))
+	} else {
+		respondWithError(rw, r, 500, err.Error())
 	}
 }
 

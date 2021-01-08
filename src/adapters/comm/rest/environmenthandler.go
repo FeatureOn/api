@@ -28,6 +28,8 @@ func (ctx *APIContext) AddEnvironment(rw http.ResponseWriter, r *http.Request) {
 	envID, err := productService.AddEnvironment(environmentDTO.ProductID, environmentDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleEnvironmentResponse(envID, environmentDTO.Name))
+	} else {
+		respondWithError(rw, r, 500, err.Error())
 	}
 }
 
@@ -40,6 +42,8 @@ func (ctx *APIContext) UpdateEnvironment(rw http.ResponseWriter, r *http.Request
 	err := productService.UpdateEnvironment(environmentDTO.ProductID, environmentDTO.EnvironmentID, environmentDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleEnvironmentResponse(environmentDTO.EnvironmentID, environmentDTO.Name))
+	} else {
+		respondWithError(rw, r, 500, err.Error())
 	}
 }
 

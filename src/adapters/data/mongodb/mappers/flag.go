@@ -7,11 +7,11 @@ import (
 
 // MapEnvironmentFlag2EnvironmentFlagDAO maps domain EnvironmentFlag to dao EnvironmentFlagDAO
 func MapEnvironmentFlag2EnvironmentFlagDAO(envFlag domain.EnvironmentFlag) dao.EnvironmentFlag {
-	envFlagDAO := dao.EnvironmentFlag{
-		EnvironmentID: envFlag.EnvironmentID,
-	}
+	envFlagDAO := dao.EnvironmentFlag{}
+	envFlagDAO.EnvironmentID = envFlag.EnvironmentID
+	envFlagDAO.Flags = make([]dao.FlagDAO, 0)
 	for _, flag := range envFlag.Flags {
-		envFlagDAO.Flags = append(envFlagDAO.Flags, dao.Flag{
+		envFlagDAO.Flags = append(envFlagDAO.Flags, dao.FlagDAO{
 			FeatureKey: flag.FeatureKey,
 			Value:      flag.Value,
 		})
