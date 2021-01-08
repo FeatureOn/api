@@ -9,22 +9,22 @@ import (
 
 // AddFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
 // then adds the feature on the product to the repository injected into ProductService
-func (ps ProductService) AddFeature(productID string, feature domain.Feature) (string, error) {
+func (ps ProductService) AddFeature(productID string, feature domain.Feature) error {
 	// Get the product data from the data store
 	product, err := ps.productRepository.GetProduct(productID)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error getting the product with id: %s", productID)
-		return "", err
+		return err
 	}
 	// Check the feature key and name is not in use
 	for _, feat := range product.Features {
 		if feat.Key == feature.Key {
 			log.Info().Msgf("Cannot add new feature, key is not unique: %s", feature.Key)
-			return "", errors.New("The feature key is not available")
+			return errors.New("The feature key is not available")
 		}
 		if feat.Name == feature.Name {
 			log.Info().Msgf("Cannot add new feature, name is not unique: %s", feature.Name)
-			return "", errors.New("The feature name is not available")
+			return errors.New("The feature name is not available")
 		}
 	}
 
@@ -43,12 +43,12 @@ func (ps ProductService) AddFeature(productID string, feature domain.Feature) (s
 	}
 
 	// Add the feature to the product
-	featureID, err := ps.productRepository.AddFeature(product, feature, envflags)
+	err = ps.productRepository.AddFeature(product, feature, envflags)
 	if err != nil {
 		log.Error().Err(err).Msg("Error adding a new feature")
-		return "", errors.New("Error adding a new feature")
+		return errors.New("Error adding a new feature")
 	}
-	return featureID, nil
+	return nil
 }
 
 // UpdateFeature first checks the uniqueness of Feature's Name and Key because the system should not allow Name and Key used twice
@@ -60,16 +60,20 @@ func (ps ProductService) UpdateFeature(productID string, feature domain.Feature)
 		log.Error().Err(err).Msgf("Error getting the product with id: %s", productID)
 		return err
 	}
-	// Check the feature key and name is not in use
+	// Check the feature name is not in use by another feature and the key exists
+	found := false
 	for _, feat := range product.Features {
-		if feat.Key == feature.Key {
-			log.Info().Msgf("Cannot add new feature, key is not unique: %s", feature.Key)
-			return errors.New("The feature key is not available")
-		}
-		if feat.Name == feature.Name {
-			log.Info().Msgf("Cannot add new feature, name is not unique: %s", feature.Name)
+		if feat.Name == feature.Name && feat.Key != feature.Key {
+			log.Info().Msgf("Cannot update the feature, name is not unique: %s", feature.Name)
 			return errors.New("The feature name is not available")
 		}
+		if feat.Key == feature.Key {
+			found = true
+		}
+	}
+	if !found {
+		log.Info().Msgf("Cannot find the feature, productID: %s, featureKey: %s", productID, feature.Key)
+		return errors.New("The feature key could not be found")
 	}
 	return ps.productRepository.UpdateFeature(product, feature)
 }

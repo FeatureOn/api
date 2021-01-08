@@ -25,7 +25,21 @@ func (ctx *APIContext) AddFeature(rw http.ResponseWriter, r *http.Request) {
 	featureDTO := r.Context().Value(validatedFeature{}).(dto.AddFeatureRequest)
 	feature := mappers.MapAddFeatureRequest2Feature(featureDTO)
 	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
-	_, err := productService.AddFeature(featureDTO.ProductID, feature)
+	err := productService.AddFeature(featureDTO.ProductID, feature)
+	if err == nil {
+		respondWithJSON(rw, r, 200, mappers.MapFeature2FeatureResponse(feature))
+	} else {
+		respondWithError(rw, r, 500, err.Error())
+	}
+}
+
+// UpdateFeature creates a new environment on the system
+func (ctx *APIContext) UpdateFeature(rw http.ResponseWriter, r *http.Request) {
+	// Get environment data from oayload
+	featureDTO := r.Context().Value(validatedFeature{}).(dto.AddFeatureRequest)
+	feature := mappers.MapAddFeatureRequest2Feature(featureDTO)
+	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	err := productService.UpdateFeature(featureDTO.ProductID, feature)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapFeature2FeatureResponse(feature))
 	} else {
