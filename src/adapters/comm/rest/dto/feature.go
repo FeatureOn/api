@@ -6,5 +6,5 @@ type AddFeatureRequest struct {
 	Name         string `json:"name" validate:"required"`
 	Key          string `json:"key" validate:"required"`
 	Description  string `json:"description" validate:"required"`
-	DefaultState bool   `json:"defaultstate" validate:"required"`
+	DefaultState bool   `json:"defaultstate"` // ToDo: Validator only accepts true value here if required tag is entered.
 }
