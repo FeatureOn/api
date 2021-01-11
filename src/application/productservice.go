@@ -13,7 +13,6 @@ type ProductRepository interface {
 	UpdateEnvironment(product domain.Product, environmentID string, environmentName string) error
 	AddFeature(product domain.Product, feature domain.Feature, envFlags []domain.EnvironmentFlag) error
 	UpdateFeature(product domain.Product, feature domain.Feature) error
-	ToggleFeatureState(product domain.Product, featureID string, newState bool) error
 }
 
 // FlagRepository is the interface to interact with Flag domain object

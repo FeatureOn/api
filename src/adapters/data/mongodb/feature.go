@@ -91,8 +91,3 @@ func (pr ProductRepository) UpdateFeature(product domain.Product, feat domain.Fe
 	}
 	return nil
 }
-
-// ToggleFeatureState disables an existing Feature on the database. Returns error if not successful
-func (pr ProductRepository) ToggleFeatureState(product domain.Product, featKey string, newState bool) error {
-	return errors.New("Not implemented")
-}
