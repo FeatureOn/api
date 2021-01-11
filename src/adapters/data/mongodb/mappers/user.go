@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// MapUser2UserDAO maps domain User to DAO UserDAO
 func MapUser2UserDAO(u domain.User) (dao.UserDAO, error) {
 	userDAO := dao.UserDAO{}
 	id, err := primitive.ObjectIDFromHex(u.ID)
