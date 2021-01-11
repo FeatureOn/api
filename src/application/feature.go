@@ -80,5 +80,5 @@ func (ps ProductService) UpdateFeature(productID string, feature domain.Feature)
 
 // DisableFeature disables the specified feature on all environments of the product
 func (ps ProductService) DisableFeature(product domain.Product, feat domain.Feature) error {
-	return ps.productRepository.DisableFeature(product, feat)
+	return ps.productRepository.ToggleFeatureState(product, feat.Key, feat.DefaultState)
 }
