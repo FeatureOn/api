@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // FlagRepository represent a structure that will communicate to MongoDB to accomplish Flag related transactions
@@ -48,7 +49,25 @@ func (fr FlagRepository) GetFlags(environmentID string) (domain.EnvironmentFlag,
 }
 
 // UpdateFlag sets new value to a spesific flag
-func (fr FlagRepository) UpdateFlag(productID string, environmentID string, featureID string, value bool) error {
-	return errors.New("Not implemented")
+func (fr FlagRepository) UpdateFlag(environmentID string, featureKey string, value bool) error {
+	collection := fr.dbClient.Database(fr.dbName).Collection(viper.GetString("FlagsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	envID, err := primitive.ObjectIDFromHex(environmentID)
+	if err != nil {
+		log.Error().Err(err).Msgf("Cannot parse environmentID: %s into ObjectID", environmentID)
+		return errors.New("EnvironmentID format is not as expected")
+	}
+
+	idDoc := bson.M{"environmentID": envID, "flags.featureKey": featureKey}
+	upDoc := bson.D{{Key: "$set", Value: bson.M{"flags.$.value": value}}}
+	var updateOpts options.UpdateOptions
+	updateOpts.SetUpsert(false)
+	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error updating the flag with environmentID: %s and featureKey: %s", environmentID, featureKey)
+		return errors.New("Error updating the flag")
+	}
+	return nil
 
 }

@@ -136,6 +136,9 @@ func (apiContext *APIContext) prepareContext(bindAddress *string) *http.Server {
 	// Flag Handlers
 	getTR := sm.Methods(http.MethodGet).Subrouter()
 	getTR.HandleFunc("/flag/{id}", apiContext.GetFlags)
+	putTR := sm.Methods(http.MethodPut).Subrouter()
+	putTR.Use(apiContext.MiddlewareValidateUpdateFlag)
+	putTR.HandleFunc("/flag", apiContext.UpdateFlag)
 	// Documentation handler
 	opts := openapimw.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := openapimw.Redoc(opts, nil)

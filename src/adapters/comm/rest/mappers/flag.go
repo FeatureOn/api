@@ -22,3 +22,11 @@ func mapFlag2FlagResponse(flag domain.Flag) dto.FlagResponse {
 		Value:      flag.Value,
 	}
 }
+
+// CreateFlagResponse creates a new FlagResponse from given parameters and returns its
+func CreateFlagResponse(featureKey string, value bool) dto.FlagResponse {
+	return dto.FlagResponse{
+		FeatureKey: featureKey,
+		Value:      value,
+	}
+}

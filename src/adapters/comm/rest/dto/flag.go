@@ -11,3 +11,10 @@ type FlagResponse struct {
 	FeatureKey string `json:"featureKey"`
 	Value      bool   `json:"value"`
 }
+
+// UpdateFlagRequest represents teh structure that will be used to update value of a flag
+type UpdateFlagRequest struct {
+	EnvironmentID string `json:"environmentID" validate:"required"`
+	FeatureKey    string `json:"featureKey" validate:"required"`
+	Value         bool   `json:"value"`
+}

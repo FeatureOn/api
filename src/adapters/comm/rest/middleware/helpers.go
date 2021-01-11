@@ -153,3 +153,19 @@ func ExtractAddFeaturePayload(r *http.Request) (env *dto.AddFeatureRequest, e er
 	}
 	return
 }
+
+// ExtractUpdateFlagPayload extracts UpdateFlagRequest data from the request body
+// Returns UpdateFlagRequest model if found, error otherwise
+func ExtractUpdateFlagPayload(r *http.Request) (updFlag *dto.UpdateFlagRequest, e error) {
+	payload, e := readPayload(r)
+	if e != nil {
+		return
+	}
+	err := json.Unmarshal(payload, &updFlag)
+	if err != nil {
+		e = errors.New(viper.GetString("CannotParsePayloadMsg"))
+		log.Error().Err(err).Msg(viper.GetString("CannotParsePayloadMsg"))
+		return
+	}
+	return
+}

@@ -18,7 +18,7 @@ type ProductRepository interface {
 // FlagRepository is the interface to interact with Flag domain object
 type FlagRepository interface {
 	GetFlags(environmentID string) (domain.EnvironmentFlag, error)
-	UpdateFlag(productID string, environmentID string, featureID string, value bool) error
+	UpdateFlag(environmentID string, featureKey string, value bool) error
 }
 
 //ProductService is the struct to let outer layers to interact to the Product Applicatopn
