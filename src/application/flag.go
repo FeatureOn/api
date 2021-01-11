@@ -7,7 +7,7 @@ func (ps ProductService) UpdateFeatureValue(productID string, environmentID stri
 	return ps.flagRepository.UpdateFlag(productID, environmentID, featureID, value)
 }
 
-// GetValues gets all feature values for a given product and environment
-func (ps ProductService) GetValues(environmentID string) (domain.EnvironmentFlag, error) {
+// GetFlags gets all feature values for a given product and environment
+func (ps ProductService) GetFlags(environmentID string) (domain.EnvironmentFlag, error) {
 	return ps.flagRepository.GetFlags(environmentID)
 }

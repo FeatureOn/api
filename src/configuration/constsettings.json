@@ -4,6 +4,7 @@
         "PayloadMissingMsg": "Payload is missing",
         "CannotParsePayloadMsg": "Cannot parse payload",
         "UsersCollection": "users",
-        "ProductsCollection": "products"
+        "ProductsCollection": "products",
+        "FlagsCollection": "flags"
     }
 }

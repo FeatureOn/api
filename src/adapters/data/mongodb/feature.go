@@ -46,8 +46,12 @@ func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Featu
 		}
 
 		for _, envFlag := range envFlags {
-			idDoc := bson.D{{Key: "environmentID", Value: envFlag.EnvironmentID}}
-			upDoc := bson.D{{Key: "$push", Value: bson.M{"flags": envFlag.Flags[0]}}}
+			envFlagDAO, err := mappers.MapEnvironmentFlag2EnvironmentFlagDAO(envFlag)
+			if err != nil {
+				return nil, err
+			}
+			idDoc := bson.D{{Key: "environmentID", Value: envFlagDAO.EnvironmentID}}
+			upDoc := bson.D{{Key: "$push", Value: bson.M{"flags": envFlagDAO.Flags[0]}}}
 			var updateOpts options.UpdateOptions
 			updateOpts.SetUpsert(true)
 			if _, err := flagCollection.UpdateOne(sessCtx, idDoc, upDoc, &updateOpts); err != nil {

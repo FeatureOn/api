@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "45d44c6c-e60d-44db-9dfc-a02e566226aa",
+		"_postman_id": "b9777999-5606-4066-b5fd-c16a07d37180",
 		"name": "FeatureOn",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -201,7 +201,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5500/product/5fdcce9642085108206e5fed",
+					"raw": "http://localhost:5500/product/5ff87647eafd371c9ae3c14e",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -209,7 +209,7 @@
 					"port": "5500",
 					"path": [
 						"product",
-						"5fdcce9642085108206e5fed"
+						"5ff87647eafd371c9ae3c14e"
 					]
 				}
 			},
@@ -221,7 +221,15 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "http://localhost:5500/product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"product"
+					]
 				}
 			},
 			"response": []
@@ -233,7 +241,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"productID\": \"5fdcce9642085108206e5fed\",\n    \"name\": \"DEV\"\n}",
+					"raw": "{\n    \"productID\": \"5ff87647eafd371c9ae3c14e\",\n    \"name\": \"DEV\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -255,13 +263,69 @@
 			"response": []
 		},
 		{
+			"name": "Add Feature",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productID\": \"5ff87647eafd371c9ae3c14e\",\n    \"name\": \"Globalization\",\n    \"key\": \"g18n\",\n    \"description\": \"Features to support multi cultures and multi languages on the product\",\n    \"defaultstate\": false\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/feature",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"feature"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Feature 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productID\": \"5ff87647eafd371c9ae3c14e\",\n    \"name\": \"Facebook Integration\",\n    \"key\": \"fbint\",\n    \"description\": \"Integration with Facebook API to support Facebook login\",\n    \"defaultstate\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/feature",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"feature"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Update Product",
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"5ff6ef1d146c61c923b460d0\",\r\n    \"name\": \"Second product\"\r\n}",
+					"raw": "{\r\n    \"id\": \"5ff6e698146c61c923b460ce\",\r\n    \"name\": \"Third product\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -277,6 +341,102 @@
 					"port": "5500",
 					"path": [
 						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Environment",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productID\": \"5ff6e698146c61c923b460ce\",\r\n    \"environmentID\": \"5ff72c816d5dcd6a665b3a8b\",\r\n    \"name\": \"TEST\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/environment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"environment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Feature",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productID\": \"5ff6ef10146c61c923b460cf\",\n    \"name\": \"Globalization\",\n    \"key\": \"g18n\",\n    \"description\": \"Features to support multi cultures and multi languages on the product\",\n    \"defaultstate\": false\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Product",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Product One\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Flags",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5500/flag/5ffcae0fd055b0d1ea6de4f4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"flag",
+						"5ffcae0fd055b0d1ea6de4f4"
 					]
 				}
 			},

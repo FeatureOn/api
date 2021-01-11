@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -33,7 +34,12 @@ func (fr FlagRepository) GetFlags(environmentID string) (domain.EnvironmentFlag,
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	var envFlagDAO dao.EnvironmentFlagDAO
-	err := collection.FindOne(ctx, bson.M{"environmentID": environmentID}).Decode(&envFlagDAO)
+	objID, err := primitive.ObjectIDFromHex(environmentID)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error parsing ProductID: %s", environmentID)
+		return domain.EnvironmentFlag{}, err
+	}
+	err = collection.FindOne(ctx, bson.M{"environmentID": objID}).Decode(&envFlagDAO)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error getting Products")
 		return domain.EnvironmentFlag{}, err
