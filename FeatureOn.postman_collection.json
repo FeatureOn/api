@@ -441,6 +441,34 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Update Flag",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environmentID\": \"5ffcae0fd055b0d1ea6de4f4\" ,\n    \"featureKey\": \"g18n\",\n    \"value\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5500/flag",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5500",
+					"path": [
+						"flag"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
