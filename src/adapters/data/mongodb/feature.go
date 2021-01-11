@@ -19,7 +19,10 @@ import (
 // AddFeature adds a new feature to an existing product on the database together with flags for all environments
 // od the product with default values. Returns ID if successful, empty string and error otherwise
 func (pr ProductRepository) AddFeature(product domain.Product, feat domain.Feature, envFlags []domain.EnvironmentFlag) error {
-	productDAO := mappers.MapProduct2ProductDAO(product)
+	productDAO, err := mappers.MapProduct2ProductDAO(product)
+	if err != nil {
+		return err
+	}
 	wcMajority := writeconcern.New(writeconcern.WMajority(), writeconcern.WTimeout(1*time.Second))
 	wcMajorityCollectionOpts := options.Collection().SetWriteConcern(wcMajority)
 	productCollection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"), wcMajorityCollectionOpts)

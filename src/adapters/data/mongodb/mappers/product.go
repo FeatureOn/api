@@ -1,12 +1,15 @@
 package mappers
 
 import (
+	"errors"
+
 	"github.com/FeatureOn/api/adapters/data/mongodb/dao"
 	"github.com/FeatureOn/api/domain"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// MapProductDAO2Product maps da ProductDAO to domain Product
 func MapProductDAO2Product(productDAO dao.ProductDAO) domain.Product {
 	product := domain.Product{
 		ID:   productDAO.ID.Hex(),
@@ -30,11 +33,13 @@ func MapProductDAO2Product(productDAO dao.ProductDAO) domain.Product {
 	return product
 }
 
-func MapProduct2ProductDAO(product domain.Product) dao.ProductDAO {
+// MapProduct2ProductDAO maps domain Product to dao ProductDAO
+func MapProduct2ProductDAO(product domain.Product) (dao.ProductDAO, error) {
 	productDAO := dao.ProductDAO{}
 	id, err := primitive.ObjectIDFromHex(product.ID)
 	if err != nil {
 		log.Error().Err(err).Msgf("Cannot parse ProductID %s into bson ObjectID", product.ID)
+		return productDAO, errors.New("ProductID format is not as expected")
 	}
 	productDAO.ID = id
 	productDAO.Name = product.Name
@@ -55,7 +60,7 @@ func MapProduct2ProductDAO(product domain.Product) dao.ProductDAO {
 			Active:       feat.Active,
 		})
 	}
-	return productDAO
+	return productDAO, nil
 }
 
 // MapFeature2FeatureDAO maps domain Feature to dao FeatureDAO

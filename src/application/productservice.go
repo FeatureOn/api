@@ -17,7 +17,7 @@ type ProductRepository interface {
 
 // FlagRepository is the interface to interact with Flag domain object
 type FlagRepository interface {
-	GetFlags(environmentID string) ([]domain.Flag, error)
+	GetFlags(environmentID string) (domain.EnvironmentFlag, error)
 	UpdateFlag(productID string, environmentID string, featureID string, value bool) error
 }
 

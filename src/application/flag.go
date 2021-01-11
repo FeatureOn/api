@@ -8,6 +8,6 @@ func (ps ProductService) UpdateFeatureValue(productID string, environmentID stri
 }
 
 // GetValues gets all feature values for a given product and environment
-func (ps ProductService) GetValues(environmentID string) ([]domain.Flag, error) {
+func (ps ProductService) GetValues(environmentID string) (domain.EnvironmentFlag, error) {
 	return ps.flagRepository.GetFlags(environmentID)
 }

@@ -1,9 +1,16 @@
 package mongodb
 
 import (
+	"context"
 	"errors"
+	"time"
 
+	"github.com/FeatureOn/api/adapters/data/mongodb/dao"
+	"github.com/FeatureOn/api/adapters/data/mongodb/mappers"
 	"github.com/FeatureOn/api/domain"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -21,8 +28,17 @@ func newFlagRepository(client *mongo.Client, databaseName string) FlagRepository
 }
 
 // GetFlags gets values of all active flags for a given environment
-func (fr FlagRepository) GetFlags(environmentID string) ([]domain.Flag, error) {
-	return nil, errors.New("Not implemented")
+func (fr FlagRepository) GetFlags(environmentID string) (domain.EnvironmentFlag, error) {
+	collection := fr.dbClient.Database(fr.dbName).Collection(viper.GetString("FlagsCollection"))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	var envFlagDAO dao.EnvironmentFlagDAO
+	err := collection.FindOne(ctx, bson.M{"environmentID": environmentID}).Decode(&envFlagDAO)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error getting Products")
+		return domain.EnvironmentFlag{}, err
+	}
+	return mappers.MapEnvironmentFlagDAO2EnvironmentFlag(envFlagDAO), nil
 }
 
 // UpdateFlag sets new value to a spesific flag

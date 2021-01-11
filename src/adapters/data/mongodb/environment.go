@@ -20,7 +20,10 @@ import (
 // AddEnvironment adds a new environment together with all its flags with default values and returns its ID,
 // returns empty string and error otherwise
 func (pr ProductRepository) AddEnvironment(product domain.Product, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error) {
-	productDAO := mappers.MapProduct2ProductDAO(product)
+	productDAO, err := mappers.MapProduct2ProductDAO(product)
+	if err != nil {
+		return "", err
+	}
 	// Preperation for inter-collection transactions
 	wcMajority := writeconcern.New(writeconcern.WMajority(), writeconcern.WTimeout(1*time.Second))
 	wcMajorityCollectionOpts := options.Collection().SetWriteConcern(wcMajority)
@@ -48,7 +51,11 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 		}
 		environmentFlag.EnvironmentID = newEnvID.Hex()
 
-		if _, err := flagCollection.InsertOne(sessCtx, mappers.MapEnvironmentFlag2EnvironmentFlagDAO(environmentFlag)); err != nil {
+		envFlagDAO, err := mappers.MapEnvironmentFlag2EnvironmentFlagDAO(environmentFlag)
+		if err != nil {
+			return nil, err
+		}
+		if _, err := flagCollection.InsertOne(sessCtx, envFlagDAO); err != nil {
 			return nil, err
 		}
 
