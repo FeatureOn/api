@@ -1,6 +1,6 @@
 package application
 
-import "github.com/FeatureOn/api/domain"
+import "github.com/FeatureOn/api/server/domain"
 
 // UpdateFlagValue updates a flag's value on its corresponding product and environment
 func (ps ProductService) UpdateFlagValue(environmentID string, featureKey string, value bool) error {

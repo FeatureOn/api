@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/FeatureOn/api/adapters/data/mongodb/dao"
-	"github.com/FeatureOn/api/adapters/data/mongodb/mappers"
-	"github.com/FeatureOn/api/domain"
+	"github.com/FeatureOn/api/server/adapters/data/mongodb/dao"
+	"github.com/FeatureOn/api/server/adapters/data/mongodb/mappers"
+	"github.com/FeatureOn/api/server/domain"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"

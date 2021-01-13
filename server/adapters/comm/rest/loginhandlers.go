@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/FeatureOn/api/application"
+	"github.com/FeatureOn/api/server/application"
 
-	"github.com/FeatureOn/api/adapters/comm/rest/dto"
-	middleware "github.com/FeatureOn/api/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
+	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/rs/zerolog/log"
 )

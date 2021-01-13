@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/FeatureOn/api/adapters/comm/rest/dto"
-	"github.com/FeatureOn/api/adapters/comm/rest/mappers"
-	"github.com/FeatureOn/api/adapters/comm/rest/middleware"
-	"github.com/FeatureOn/api/application"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/mappers"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/application"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 )

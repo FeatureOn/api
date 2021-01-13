@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"github.com/FeatureOn/api/application"
+	"github.com/FeatureOn/api/server/application"
 
 	"github.com/rs/zerolog/log"
 )

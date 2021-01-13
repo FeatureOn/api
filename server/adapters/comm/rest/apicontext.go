@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/FeatureOn/api/application"
+	"github.com/FeatureOn/api/server/application"
 
-	middleware "github.com/FeatureOn/api/adapters/comm/rest/middleware"
+	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/gorilla/mux"
 	"github.com/nicholasjackson/env"
 	opentracing "github.com/opentracing/opentracing-go"

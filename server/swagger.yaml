@@ -11,7 +11,7 @@ definitions:
         type: string
         x-go-name: Message
     type: object
-    x-go-package: github.com/FeatureOn/api/adapters/comm/rest
+    x-go-package: github.com/FeatureOn/api/server/adapters/comm/rest
   Kind:
     description: The zero Kind is not a valid kind.
     format: uint64
@@ -145,7 +145,7 @@ definitions:
       UserName:
         type: string
     type: object
-    x-go-package: github.com/FeatureOn/api/adapters/comm/rest/dto
+    x-go-package: github.com/FeatureOn/api/server/adapters/comm/rest/dto
   ValidationError:
     description: |-
       ValidationError wraps the validators FieldError so we do not
@@ -221,7 +221,7 @@ definitions:
           message
         type: object
     type: object
-    x-go-package: github.com/FeatureOn/api/adapters/comm/rest/middleware
+    x-go-package: github.com/FeatureOn/api/server/adapters/comm/rest/middleware
 info: {}
 paths:
   /:

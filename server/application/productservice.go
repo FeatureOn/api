@@ -1,6 +1,6 @@
 package application
 
-import "github.com/FeatureOn/api/domain"
+import "github.com/FeatureOn/api/server/domain"
 
 // ProductRepository is the interface to interact with Product domain object
 type ProductRepository interface {

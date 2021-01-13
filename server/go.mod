@@ -1,8 +1,9 @@
-module github.com/FeatureOn/api
+module github.com/FeatureOn/api/server
 
 go 1.15
 
 require (
+	github.com/FeatureOn/api v0.0.0-20210113203819-1634e1952e67
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gbrlsnchs/jwt/v3 v3.0.0

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"unicode"
 
-	"github.com/FeatureOn/api/domain"
+	"github.com/FeatureOn/api/server/domain"
 )
 
 // UserRepository is the interface to interact with User domain object

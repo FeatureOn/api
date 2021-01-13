@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/FeatureOn/api/domain"
+	"github.com/FeatureOn/api/server/domain"
 )
 
 // // User object represents the user model to hold in memory

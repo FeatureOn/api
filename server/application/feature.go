@@ -3,7 +3,7 @@ package application
 import (
 	"errors"
 
-	"github.com/FeatureOn/api/domain"
+	"github.com/FeatureOn/api/server/domain"
 	"github.com/rs/zerolog/log"
 )
 

@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"github.com/FeatureOn/api/adapters/comm/rest/dto"
-	"github.com/FeatureOn/api/domain"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/server/domain"
 )
 
 // MapEnvironmentFlag2EnvironmentFlagResponse maps domain EnvironmentFlag to dto EnvironmentFlagResponse

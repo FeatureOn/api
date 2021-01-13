@@ -6,14 +6,14 @@ import (
 	"os/signal"
 	"time"
 
-	rest "github.com/FeatureOn/api/adapters/comm/rest"
-	//memory "github.com/FeatureOn/api/adapters/data/memory"
-	mongodb "github.com/FeatureOn/api/adapters/data/mongodb"
+	rest "github.com/FeatureOn/api/server/adapters/comm/rest"
+	//memory "github.com/FeatureOn/api/server/adapters/data/memory"
+	mongodb "github.com/FeatureOn/api/server/adapters/data/mongodb"
 	"github.com/nicholasjackson/env"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	util "github.com/FeatureOn/api/util"
+	util "github.com/FeatureOn/api/server/util"
 )
 
 var bindAddress = env.String("BASE_URL", false, ":5500", "Bind address for the server")

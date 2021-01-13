@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"github.com/FeatureOn/api/adapters/comm/rest/dto"
-	"github.com/FeatureOn/api/domain"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
+	"github.com/FeatureOn/api/server/domain"
 )
 
 // MapAddUserRequest2User maps dto UserRequest to domain User
