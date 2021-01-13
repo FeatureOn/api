@@ -1,0 +1,22 @@
+syntax = "proto3";
+option go_package = "github.com/featureon/api/flagpb";
+package grpc;
+
+message EnvironmentFlags {
+    string environmentID = 1;
+    repeated Flag flags = 2;
+}
+
+message Flag {
+    string featureKey = 1;
+    bool value = 2;
+}
+
+message EnvironmentFlagQuery {
+    string environmentID = 1;
+}
+
+// FlagService exposes methods to call
+service FlagService {
+    rpc GetEnvironmentFlags(EnvironmentFlagQuery) returns (EnvironmentFlags){}
+}
