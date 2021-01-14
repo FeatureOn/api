@@ -19,9 +19,9 @@ jobs:
         go-version: 1.15
 
     - name: Build
-      working-directory: ./src
+      working-directory: ./server
       run: go build
 
     - name: Test
-      working-directory: ./src
+      working-directory: ./server
       run: go test
