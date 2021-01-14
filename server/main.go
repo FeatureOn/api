@@ -2,11 +2,16 @@ package main
 
 import (
 	"context"
+	"net"
 	"os"
 	"os/signal"
 	"time"
 
-	rest "github.com/FeatureOn/api/server/adapters/comm/rest"
+	pb "github.com/FeatureOn/api/flagpb"
+	grpcServer "github.com/FeatureOn/api/server/adapters/comm/grpc"
+	"github.com/FeatureOn/api/server/adapters/comm/rest"
+	grpc "google.golang.org/grpc"
+
 	//memory "github.com/FeatureOn/api/server/adapters/data/memory"
 	mongodb "github.com/FeatureOn/api/server/adapters/data/mongodb"
 	"github.com/nicholasjackson/env"
@@ -16,7 +21,8 @@ import (
 	util "github.com/FeatureOn/api/server/util"
 )
 
-var bindAddress = env.String("BASE_URL", false, ":5500", "Bind address for the server")
+var bindAddress = env.String("BASE_URL", false, ":5500", "Bind address for rest server")
+var grpcAddress = env.String("GRPC_URL", false, ":5501", "Bind address for grpc server")
 
 func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -34,7 +40,18 @@ func main() {
 
 		err := s.ListenAndServe()
 		if err != nil {
-			log.Error().Err(err).Msg("Error starting server")
+			log.Error().Err(err).Msg("Error starting rest server")
+			os.Exit(1)
+		}
+		lis, err := net.Listen("tcp", *grpcAddress)
+		if err != nil {
+			log.Error().Err(err).Msg("Error starting grpc server")
+			os.Exit(1)
+		}
+		s := grpc.NewServer()
+		pb.RegisterFlagServiceServer(s, &grpcServer.Server{})
+		if err := s.Serve(lis); err != nil {
+			log.Error().Err(err).Msg("Error starting grpc server")
 			os.Exit(1)
 		}
 	}()
