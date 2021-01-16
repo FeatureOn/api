@@ -16,6 +16,14 @@ type Server struct {
 	productRepo application.ProductRepository
 }
 
+// NewServer creates a new grpc.Server and initializes it with repositories
+func NewServer(flagRepository application.FlagRepository, productRepository application.ProductRepository) *Server {
+	return &Server{
+		flagRepo:    flagRepository,
+		productRepo: productRepository,
+	}
+}
+
 // GetEnvironmentFlags implements featureon.api.flagpb.GetEnvironmentFlags
 func (s *Server) GetEnvironmentFlags(ctx context.Context, in *pb.EnvironmentFlagQuery) (*pb.EnvironmentFlags, error) {
 	log.Printf("Received: %v", in.GetEnvironmentID())

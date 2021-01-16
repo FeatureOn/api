@@ -9,7 +9,7 @@ import (
 
 	pb "github.com/FeatureOn/api/flagpb"
 	grpcServer "github.com/FeatureOn/api/server/adapters/comm/grpc"
-	"github.com/FeatureOn/api/server/adapters/comm/rest"
+	rest "github.com/FeatureOn/api/server/adapters/comm/rest"
 	grpc "google.golang.org/grpc"
 
 	//memory "github.com/FeatureOn/api/server/adapters/data/memory"
@@ -34,7 +34,7 @@ func main() {
 	//s := rest.NewAPIContext(dbContext, bindAddress)
 	s := rest.NewAPIContext(bindAddress, dbContext.HealthRepository, dbContext.UserRepository, dbContext.ProductRepository, dbContext.FlagRepository)
 
-	// start the server
+	// start the http server
 	go func() {
 		log.Debug().Msgf("Starting server on %s", *bindAddress)
 
@@ -43,13 +43,19 @@ func main() {
 			log.Error().Err(err).Msg("Error starting rest server")
 			os.Exit(1)
 		}
+	}()
+
+	g := grpcServer.NewServer(dbContext.FlagRepository, dbContext.ProductRepository)
+
+	// start the grpc server
+	go func() {
 		lis, err := net.Listen("tcp", *grpcAddress)
 		if err != nil {
 			log.Error().Err(err).Msg("Error starting grpc server")
 			os.Exit(1)
 		}
 		s := grpc.NewServer()
-		pb.RegisterFlagServiceServer(s, &grpcServer.Server{})
+		pb.RegisterFlagServiceServer(s, g)
 		if err := s.Serve(lis); err != nil {
 			log.Error().Err(err).Msg("Error starting grpc server")
 			os.Exit(1)
