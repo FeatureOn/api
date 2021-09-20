@@ -17,4 +17,4 @@ src/api
 src/__debug_bin
 src/.scannerwork
 src/*.log
-server/coverage.txt
+server/coverage.*
