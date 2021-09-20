@@ -24,4 +24,4 @@ jobs:
 
     - name: Test
       working-directory: ./server
-      run: go test
+      run: go test ./...
