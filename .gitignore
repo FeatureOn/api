@@ -12,9 +12,9 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-src/vendor/
-src/api
-src/__debug_bin
-src/.scannerwork
-src/*.log
-server/coverage.*
+**/vendor/
+server/server
+**/__debug_bin
+**/.scannerwork
+**/*.log
+**/coverage.*

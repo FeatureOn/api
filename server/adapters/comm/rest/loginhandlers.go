@@ -2,6 +2,8 @@ package rest
 
 import (
 	"context"
+	"fmt"
+	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"time"
 
@@ -9,7 +11,6 @@ import (
 
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
 	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
-	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,14 +18,18 @@ type ValidatedLogin struct{}
 
 // Claims represents the data for a user login
 type Claims struct {
-	UserID  string      `json:"userid"`
-	Payload jwt.Payload `json:payload`
+	UserID  string               `json:"userid"`
+	Payload jwt.RegisteredClaims `json:payload`
+}
+
+func (c Claims) Valid() error {
+	return c.Payload.Valid()
 }
 
 const secretKey = "the_most_secure_secret"
 const cookieName = "togglertoken"
 
-var hs = jwt.NewHS256([]byte(secretKey))
+var hs = []byte(secretKey)
 
 // Login swagger:route POST PUT /user Login
 //
@@ -45,32 +50,28 @@ func (ctx *APIContext) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the JWT claims, which includes the username and expiry time
 	now := time.Now()
-	pl := Claims{
-		Payload: jwt.Payload{
-			Issuer:         "toggler",
-			Subject:        "togglerlogin",
-			Audience:       jwt.Audience{"https://toggler.io", "https://jwt.io"},
-			ExpirationTime: jwt.NumericDate(now.Add(30 * time.Minute)),
-			NotBefore:      jwt.NumericDate(now.Add(30 * time.Minute)),
-			IssuedAt:       jwt.NumericDate(now),
-			JWTID:          "toggler",
-		},
-		UserID: user.ID,
+	rclaims := jwt.RegisteredClaims{
+		Audience:  jwt.ClaimStrings{"https://toggler.io"},
+		ExpiresAt: jwt.NewNumericDate(now.Add(30 * time.Minute)),
+		ID:        "toggler",
+		IssuedAt:  jwt.NewNumericDate(now),
+		Issuer:    "toggler",
+		NotBefore: jwt.NewNumericDate(now.Add(30 * time.Minute)),
+		Subject:   "togglerlogin",
 	}
 
-	token, err := jwt.Sign(pl, hs)
+	pl := Claims{
+		Payload: rclaims,
+		UserID:  user.ID,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, pl)
+
+	tokenstring, err := token.SignedString(hs)
 	if err != nil {
 		log.Error().Err(err).Msg("Error creating the token")
 		respondWithError(w, r, 500, "Token creation failed")
 		return
 	}
-
-	if err != nil {
-		// If there is an error in creating the JWT return an internal server error
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	tokenstring := string(token[:])
 	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -79,9 +80,7 @@ func (ctx *APIContext) Login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:  cookieName,
 		Value: tokenstring,
-		//Expires: expirationTime,
-		Path: "/",
-		//Domain:  "cookieseal.com",
+		Path:  "/",
 	})
 }
 
@@ -105,16 +104,20 @@ func checkLogin(r *http.Request) (status bool, httpStatusCode int, claims *Claim
 	tokenstring := c.Value
 	// Initialize a new instance of `Claims`
 	claims = &Claims{}
-	// Parse the JWT string and store the result in `claims`.
-	// Note that we are passing the key in this method as well. This method will return an error
-	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
-	// or if the signature does not match
-	_, err = jwt.Verify([]byte(tokenstring), hs, claims)
 
+	token, err := jwt.ParseWithClaims(tokenstring, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return hs, nil
+	})
 	if err != nil {
+		log.Error().Err(err).Msg("Error validating the token")
 		httpStatusCode = http.StatusUnauthorized
 		return
 	}
+	claims = token.Claims.(*Claims)
 	status = true
 	return
 }
@@ -133,27 +136,17 @@ func (ctx *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
 		// We ensure that a new token is not issued until enough time has elapsed
 		// In this case, a new token will only be issued if the old token is within
 		// 30 seconds of expiry. Otherwise, return a bad request status
-		if claims.Payload.ExpirationTime.Sub(time.Now()) > 30*time.Minute {
+		if claims.Payload.ExpiresAt.Sub(time.Now()) > 30*time.Minute {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		// Now, create a new token for the current use, with a renewed expiration time
 		expirationTime := time.Now().Add(60 * time.Minute)
-		claims.Payload.ExpirationTime = jwt.NumericDate(expirationTime)
-		token, err := jwt.Sign(claims, hs)
-		if err != nil {
-			log.Error().Err(err).Msg("Error creating the token")
-			respondWithError(w, r, 500, "Token creation failed")
-			return
-		}
+		claims.Payload.ExpiresAt = jwt.NewNumericDate(expirationTime)
+		token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 
-		if err != nil {
-			// If there is an error in creating the JWT return an internal server error
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		tokenstring := string(token[:])
+		tokenstring, err := token.SignedString(hs)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
