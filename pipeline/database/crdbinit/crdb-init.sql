@@ -1,0 +1,9 @@
+CREATE DATABASE featureon;
+USE featureon;
+CREATE TABLE users
+(
+    ID UUID PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    UserName VARCHAR(100) NOT NULL,
+    Password BYTES NOT NULL
+);

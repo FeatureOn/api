@@ -1,0 +1,5 @@
+FROM cockroachdb/cockroach:v22.1.0
+
+COPY crdb-init.sql ./
+
+ENTRYPOINT ./cockroach sql --host localhost:26257 --insecure --file ./crdb-init.sql

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/FeatureOn/api/server/adapters/data/cockroachdb"
 	"net"
 	"os"
 	"os/signal"
@@ -12,8 +13,6 @@ import (
 	rest "github.com/FeatureOn/api/server/adapters/comm/rest"
 	grpc "google.golang.org/grpc"
 
-	//memory "github.com/FeatureOn/api/server/adapters/data/memory"
-	mongodb "github.com/FeatureOn/api/server/adapters/data/mongodb"
 	"github.com/nicholasjackson/env"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -30,7 +29,8 @@ func main() {
 	util.SetLogLevels()
 
 	//dbContext := memory.NewDataContext()
-	dbContext := mongodb.NewDataContext()
+	//dbContext := mongodb.NewDataContext()
+	dbContext := cockroachdb.NewDataContext()
 	//s := rest.NewAPIContext(dbContext, bindAddress)
 	s := rest.NewAPIContext(bindAddress, dbContext.HealthRepository, dbContext.UserRepository, dbContext.ProductRepository, dbContext.FlagRepository)
 
