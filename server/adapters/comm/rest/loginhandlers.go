@@ -53,18 +53,18 @@ func (ctx *APIContext) Login(w http.ResponseWriter, r *http.Request) {
 	rclaims := jwt.RegisteredClaims{
 		Audience:  jwt.ClaimStrings{"https://toggler.io"},
 		ExpiresAt: jwt.NewNumericDate(now.Add(30 * time.Minute)),
-		ID:        "toggler",
+		ID:        "featureon",
 		IssuedAt:  jwt.NewNumericDate(now),
-		Issuer:    "toggler",
+		Issuer:    "featureon",
 		NotBefore: jwt.NewNumericDate(now.Add(30 * time.Minute)),
-		Subject:   "togglerlogin",
+		Subject:   "featureonlogin",
 	}
 
 	pl := Claims{
 		Payload: rclaims,
 		UserID:  user.ID,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, pl)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, pl)
 
 	tokenstring, err := token.SignedString(hs)
 	if err != nil {
