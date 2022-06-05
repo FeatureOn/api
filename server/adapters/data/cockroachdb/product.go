@@ -41,7 +41,7 @@ func (pr ProductRepository) AddProduct(productName string) (string, error) {
 		return "", err
 	}
 	if result.RowsAffected() != 1 {
-		return "", errors.New("Error updating the product")
+		return "", errors.New("error updating the product")
 	}
 	return id.String(), nil
 }
@@ -54,7 +54,7 @@ func (pr ProductRepository) UpdateProduct(productID string, productName string) 
 		return err
 	}
 	if result.RowsAffected() != 1 {
-		return errors.New("Error updating the product")
+		return errors.New("error updating the product")
 	}
 	return nil
 }
@@ -128,7 +128,7 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 	}
 	if result.RowsAffected() != 1 {
 		tran.Rollback(ctx)
-		return "", errors.New("Error adding the environment")
+		return "", errors.New("error adding the environment")
 	}
 	// We have to add flags for this environment for each feature
 	for _, flag := range environmentFlag.Flags {
@@ -139,7 +139,7 @@ func (pr ProductRepository) AddEnvironment(product domain.Product, environmentNa
 		}
 		if result.RowsAffected() != 1 {
 			tran.Rollback(ctx)
-			return "", errors.New("Error adding the environment")
+			return "", errors.New("error adding the environment")
 		}
 	}
 	tran.Commit(ctx)
@@ -154,17 +154,52 @@ func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmen
 		return err
 	}
 	if result.RowsAffected() != 1 {
-		return errors.New("Error updating the environment")
+		return errors.New("error updating the environment")
 	}
 	return nil
 }
 
-func (pr ProductRepository) AddFeature(product domain.Product, feature domain.Feature, envFlags []domain.EnvironmentFlag) error {
-	//TODO implement me
-	panic("implement me")
+func (pr ProductRepository) AddFeature(product domain.Product, feature domain.Feature, environmentFlags []domain.EnvironmentFlag) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	tran, err := pr.cp.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	result, err := pr.cp.Exec(ctx, fmt.Sprintf("insert into %s.features (Key, Name, ProductID, Description, DefaultState, Active) values ($1, $2, $3, $4, $5, $6)", pr.dbName), feature.Key, feature.Name, product.ID, feature.Description, feature.DefaultState, feature.Active)
+	if err != nil {
+		tran.Rollback(ctx)
+		return err
+	}
+	if result.RowsAffected() != 1 {
+		tran.Rollback(ctx)
+		return errors.New("error adding the feature")
+	}
+	// We have to add flags for this feature for each environment
+	for _, flag := range environmentFlags {
+		result, err = pr.cp.Exec(ctx, fmt.Sprintf("insert into %s.flags (FeatureKey, EnvironmentID, Value) values ($1, $2, $3)", pr.dbName), feature.Key, flag.EnvironmentID, feature.DefaultState)
+		if err != nil {
+			tran.Rollback(ctx)
+			return err
+		}
+		if result.RowsAffected() != 1 {
+			tran.Rollback(ctx)
+			return errors.New("error adding the feature")
+		}
+	}
+	tran.Commit(ctx)
+	return nil
 }
 
 func (pr ProductRepository) UpdateFeature(product domain.Product, feature domain.Feature) error {
-	//TODO implement me
-	panic("implement me")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	result, err := pr.cp.Exec(ctx, fmt.Sprintf("update %s.features set Name=$1, Description=$2, DefaultState=$3, Active=$4 where Key=$5 and ProductID=$6", pr.dbName), feature.Name, feature.Description, feature.DefaultState, feature.Active, feature.Key, product.ID)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() != 1 {
+		return errors.New("error updating the feature")
+	}
+	return nil
 }
