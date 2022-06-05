@@ -1,3 +1,3 @@
 **FeatureOn WebApi**
 
-[![Go](https://github.com/FeatureOn/api/actions/workflows/go.yml/badge.svg)](https://github.com/FeatureOn/api/actions/workflows/go.yml)  [![CodeQL](https://github.com/FeatureOn/api/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/FeatureOn/api/actions/workflows/codeql-analysis.yml)
+[![Go](https://github.com/FeatureOn/api/actions/workflows/go.yml/badge.svg)](https://github.com/FeatureOn/api/actions/workflows/go.yml)  [![CodeQL](https://github.com/FeatureOn/api/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/FeatureOn/api/actions/workflows/codeql-analysis.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/FeatureOn/api/server)](https://goreportcard.com/report/github.com/FeatureOn/api/server)
