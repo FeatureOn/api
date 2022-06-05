@@ -2,24 +2,27 @@ package cockroachdb
 
 import (
 	"context"
+	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
 )
 
 type HealthRepository struct {
-	cp *pgxpool.Pool
+	cp     *pgxpool.Pool
+	dbName string
 }
 
-func newHealthRepository(pool *pgxpool.Pool) HealthRepository {
+func newHealthRepository(pool *pgxpool.Pool, databaseName string) HealthRepository {
 	return HealthRepository{
-		cp: pool,
+		cp:     pool,
+		dbName: databaseName,
 	}
 }
 
 func (hr HealthRepository) Ready() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if _, err := hr.cp.Exec(ctx, "select 1 from featureon.users"); err != nil {
+	if _, err := hr.cp.Exec(ctx, fmt.Sprintf("select 1 from %s.users", hr.dbName)); err != nil {
 		return false
 	}
 	return true

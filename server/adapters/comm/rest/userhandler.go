@@ -42,7 +42,7 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 
 // AddUser creates a new user on the system
 func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
-	// Get user data from oayload
+	// Get user data from payload
 	userDTO := r.Context().Value(validatedUser{}).(dto.AddUserRequest)
 	user := mappers.MapAddUserRequest2User(userDTO)
 	userService := application.NewUserService(ctx.userRepo)

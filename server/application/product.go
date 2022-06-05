@@ -33,7 +33,7 @@ func (ps ProductService) checkProductName(productName string) error {
 		log.Error().Err(err).Msg("Error checking product name uniqueness")
 		return err
 	}
-	if existingID != "000000000000000000000000" {
+	if existingID != "000000000000000000000000" && existingID != "" {
 		return errors.New("The product name is not available")
 	}
 	return nil

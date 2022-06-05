@@ -44,9 +44,9 @@ func NewDataContext() DataContext {
 		log.Error().Err(err).Msgf("An error occured while connecting to tha database")
 	}
 	dataContext := DataContext{}
-	dataContext.UserRepository = newUserRepository(dbPool)
-	dataContext.HealthRepository = newHealthRepository(dbPool)
-	dataContext.ProductRepository = newProductRepository(dbPool)
-	dataContext.FlagRepository = newFlagRepository(dbPool)
+	dataContext.UserRepository = newUserRepository(dbPool, databaseName)
+	dataContext.HealthRepository = newHealthRepository(dbPool, databaseName)
+	dataContext.ProductRepository = newProductRepository(dbPool, databaseName)
+	dataContext.FlagRepository = newFlagRepository(dbPool, databaseName)
 	return dataContext
 }

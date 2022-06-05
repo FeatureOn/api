@@ -6,12 +6,14 @@ import (
 )
 
 type FlagRepository struct {
-	cp *pgxpool.Pool
+	cp     *pgxpool.Pool
+	dbName string
 }
 
-func newFlagRepository(pool *pgxpool.Pool) FlagRepository {
+func newFlagRepository(pool *pgxpool.Pool, databaseName string) FlagRepository {
 	return FlagRepository{
-		cp: pool,
+		cp:     pool,
+		dbName: databaseName,
 	}
 }
 
