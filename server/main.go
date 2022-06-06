@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"github.com/FeatureOn/api/server/adapters/data"
 	"github.com/FeatureOn/api/server/adapters/data/cockroachdb"
+	"github.com/FeatureOn/api/server/adapters/data/mongodb"
 	"net"
 	"os"
 	"os/signal"
@@ -10,28 +12,32 @@ import (
 
 	pb "github.com/FeatureOn/api/flagpb"
 	grpcServer "github.com/FeatureOn/api/server/adapters/comm/grpc"
-	rest "github.com/FeatureOn/api/server/adapters/comm/rest"
-	grpc "google.golang.org/grpc"
+	"github.com/FeatureOn/api/server/adapters/comm/rest"
+	"google.golang.org/grpc"
 
 	"github.com/nicholasjackson/env"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	util "github.com/FeatureOn/api/server/util"
+	"github.com/FeatureOn/api/server/util"
 )
 
 var bindAddress = env.String("BASE_URL", false, ":5500", "Bind address for rest server")
 var grpcAddress = env.String("GRPC_URL", false, ":5501", "Bind address for grpc server")
+var dbType = env.String("DB_TYPE", false, "cockroachdb", "The preferred database provider. possible values: mongodb, cockroachdb. default: cockroachdb")
 
 func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	util.SetConstValues()
 	util.SetLogLevels()
 
-	//dbContext := memory.NewDataContext()
-	//dbContext := mongodb.NewDataContext()
-	dbContext := cockroachdb.NewDataContext()
-	//s := rest.NewAPIContext(dbContext, bindAddress)
+	var dbContext data.DataContext
+	switch *dbType {
+	case "mongodb":
+		dbContext = mongodb.NewDataContext()
+	default:
+		dbContext = cockroachdb.NewDataContext()
+	}
 	s := rest.NewAPIContext(bindAddress, dbContext.HealthRepository, dbContext.UserRepository, dbContext.ProductRepository, dbContext.FlagRepository)
 
 	// start the http server

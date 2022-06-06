@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"github.com/FeatureOn/api/server/adapters/data"
 	"os"
 	"time"
 
@@ -10,16 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// DataContext represents a struct that holds concrete repositories
-type DataContext struct {
-	UserRepository    UserRepository
-	HealthRepository  HealthRepository
-	ProductRepository ProductRepository
-	FlagRepository    FlagRepository
-}
-
 // NewDataContext returns a new mongoDB backed DataContext
-func NewDataContext() DataContext {
+func NewDataContext() data.DataContext {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	// We try to get connectionstring value from the environment variables, if not found it falls back to local database
@@ -50,7 +43,7 @@ func NewDataContext() DataContext {
 		}
 		log.Info().Msg("Connected to MongoDB!")
 	}
-	dataContext := DataContext{}
+	dataContext := data.DataContext{}
 	dataContext.UserRepository = newUserRepository(client, databaseName)
 	dataContext.HealthRepository = newHealthRepository(client, databaseName)
 	dataContext.ProductRepository = newProductRepository(client, databaseName)
