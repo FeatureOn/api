@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// HealthRepository represent a structure that will communicate to MongoDB to accomplish health related transactions
 type HealthRepository struct {
 	cp     *pgxpool.Pool
 	dbName string
@@ -19,6 +20,7 @@ func newHealthRepository(pool *pgxpool.Pool, databaseName string) HealthReposito
 	}
 }
 
+// Ready checks the mongodb connection
 func (hr HealthRepository) Ready() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

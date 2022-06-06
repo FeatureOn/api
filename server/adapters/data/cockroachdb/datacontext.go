@@ -2,23 +2,15 @@ package cockroachdb
 
 import (
 	"context"
+	"github.com/FeatureOn/api/server/adapters/data"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/rs/zerolog/log"
 	"os"
 	"time"
-
-	"github.com/rs/zerolog/log"
 )
 
-// DataContext represents a struct that holds concrete repositories
-type DataContext struct {
-	UserRepository    UserRepository
-	HealthRepository  HealthRepository
-	ProductRepository ProductRepository
-	FlagRepository    FlagRepository
-}
-
 // NewDataContext returns a new CockroachDB/Postgres backed DataContext
-func NewDataContext() DataContext {
+func NewDataContext() data.DataContext {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	// We try to get connectionstring value from the environment variables, if not found it falls back to local database
@@ -43,7 +35,7 @@ func NewDataContext() DataContext {
 	if err != nil {
 		log.Error().Err(err).Msgf("An error occured while connecting to tha database")
 	}
-	dataContext := DataContext{}
+	dataContext := data.DataContext{}
 	dataContext.UserRepository = newUserRepository(dbPool, databaseName)
 	dataContext.HealthRepository = newHealthRepository(dbPool, databaseName)
 	dataContext.ProductRepository = newProductRepository(dbPool, databaseName)

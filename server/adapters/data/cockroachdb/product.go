@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// ProductRepository represent a structpre that will communicate to MongoDB to accomplish product related transactions
 type ProductRepository struct {
 	cp     *pgxpool.Pool
 	dbName string
@@ -22,6 +23,7 @@ func newProductRepository(pool *pgxpool.Pool, databaseName string) ProductReposi
 	}
 }
 
+// GetProductByName returns the ID of the product if the name matches a product in the database, returns empty string and error otherwise
 func (pr ProductRepository) GetProductByName(productName string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -32,6 +34,7 @@ func (pr ProductRepository) GetProductByName(productName string) (string, error)
 	return id, nil
 }
 
+// AddProduct adds a new product to the database and returns its ID, returns empty string and error otherwise
 func (pr ProductRepository) AddProduct(productName string) (string, error) {
 	id := uuid.New()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -46,6 +49,7 @@ func (pr ProductRepository) AddProduct(productName string) (string, error) {
 	return id.String(), nil
 }
 
+// UpdateProduct updates a product on the database, returns error otherwise
 func (pr ProductRepository) UpdateProduct(productID string, productName string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -59,6 +63,7 @@ func (pr ProductRepository) UpdateProduct(productID string, productName string) 
 	return nil
 }
 
+// GetProducts returns an array of all products defined in the database
 func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -78,6 +83,7 @@ func (pr ProductRepository) GetProducts() ([]domain.Product, error) {
 	return products, nil
 }
 
+// GetProduct returns one Product with the given ID if it exists in the array, returns not found error otherwise
 func (pr ProductRepository) GetProduct(id string) (domain.Product, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -111,95 +117,4 @@ func (pr ProductRepository) GetProduct(id string) (domain.Product, error) {
 		product.Environments = append(product.Environments, environment)
 	}
 	return product, nil
-}
-
-func (pr ProductRepository) AddEnvironment(product domain.Product, environmentName string, environmentFlag domain.EnvironmentFlag) (string, error) {
-	id := uuid.New()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	tran, err := pr.cp.Begin(ctx)
-	if err != nil {
-		return "", err
-	}
-	result, err := pr.cp.Exec(ctx, fmt.Sprintf("insert into %s.environments (ID, Name, ProductID) values ($1, $2, $3)", pr.dbName), id, environmentName, product.ID)
-	if err != nil {
-		tran.Rollback(ctx)
-		return "", err
-	}
-	if result.RowsAffected() != 1 {
-		tran.Rollback(ctx)
-		return "", errors.New("error adding the environment")
-	}
-	// We have to add flags for this environment for each feature
-	for _, flag := range environmentFlag.Flags {
-		result, err = pr.cp.Exec(ctx, fmt.Sprintf("insert into %s.flags (FeatureKey, EnvironmentID, Value) values ($1, $2, $3)", pr.dbName), flag.FeatureKey, id, flag.Value)
-		if err != nil {
-			tran.Rollback(ctx)
-			return "", err
-		}
-		if result.RowsAffected() != 1 {
-			tran.Rollback(ctx)
-			return "", errors.New("error adding the environment")
-		}
-	}
-	tran.Commit(ctx)
-	return id.String(), nil
-}
-
-func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmentID string, environmentName string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	result, err := pr.cp.Exec(ctx, fmt.Sprintf("update %s.environments set Name=$1 where ID=$2", pr.dbName), environmentName, environmentID)
-	if err != nil {
-		return err
-	}
-	if result.RowsAffected() != 1 {
-		return errors.New("error updating the environment")
-	}
-	return nil
-}
-
-func (pr ProductRepository) AddFeature(product domain.Product, feature domain.Feature, environmentFlags []domain.EnvironmentFlag) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
-	tran, err := pr.cp.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	result, err := pr.cp.Exec(ctx, fmt.Sprintf("insert into %s.features (Key, Name, ProductID, Description, DefaultState, Active) values ($1, $2, $3, $4, $5, $6)", pr.dbName), feature.Key, feature.Name, product.ID, feature.Description, feature.DefaultState, feature.Active)
-	if err != nil {
-		tran.Rollback(ctx)
-		return err
-	}
-	if result.RowsAffected() != 1 {
-		tran.Rollback(ctx)
-		return errors.New("error adding the feature")
-	}
-	// We have to add flags for this feature for each environment
-	for _, flag := range environmentFlags {
-		result, err = pr.cp.Exec(ctx, fmt.Sprintf("insert into %s.flags (FeatureKey, EnvironmentID, Value) values ($1, $2, $3)", pr.dbName), feature.Key, flag.EnvironmentID, feature.DefaultState)
-		if err != nil {
-			tran.Rollback(ctx)
-			return err
-		}
-		if result.RowsAffected() != 1 {
-			tran.Rollback(ctx)
-			return errors.New("error adding the feature")
-		}
-	}
-	tran.Commit(ctx)
-	return nil
-}
-
-func (pr ProductRepository) UpdateFeature(product domain.Product, feature domain.Feature) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	result, err := pr.cp.Exec(ctx, fmt.Sprintf("update %s.features set Name=$1, Description=$2, DefaultState=$3, Active=$4 where Key=$5 and ProductID=$6", pr.dbName), feature.Name, feature.Description, feature.DefaultState, feature.Active, feature.Key, product.ID)
-	if err != nil {
-		return err
-	}
-	if result.RowsAffected() != 1 {
-		return errors.New("error updating the feature")
-	}
-	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// UserRepository represent a structure that will communicate to MongoDB to accomplish user related transactions
 type UserRepository struct {
 	cp     *pgxpool.Pool
 	dbName string
@@ -22,6 +23,7 @@ func newUserRepository(pool *pgxpool.Pool, databaseName string) UserRepository {
 	}
 }
 
+// GetUser returns one user with the given ID if it exists in the array, returns not found error otherwise
 func (ur UserRepository) GetUser(ID string) (domain.User, error) {
 	user := domain.User{}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -32,6 +34,7 @@ func (ur UserRepository) GetUser(ID string) (domain.User, error) {
 	return user, nil
 }
 
+// CheckUser checks the username & password if it matches any user from the array
 func (ur UserRepository) CheckUser(username string, password string) (domain.User, error) {
 	user := domain.User{}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -42,6 +45,7 @@ func (ur UserRepository) CheckUser(username string, password string) (domain.Use
 	return user, nil
 }
 
+// AddUser adds a new user to the array in the memory
 func (ur UserRepository) AddUser(u domain.User) error {
 	id := uuid.New()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -55,6 +59,7 @@ func (ur UserRepository) AddUser(u domain.User) error {
 	return nil
 }
 
+// UpdateUser updates an existing user on the user array
 func (ur UserRepository) UpdateUser(u domain.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -65,6 +70,7 @@ func (ur UserRepository) UpdateUser(u domain.User) error {
 	return nil
 }
 
+// DeleteUser deletes a user from the user array
 func (ur UserRepository) DeleteUser(u domain.User) error {
 	//TODO implement me
 	panic("implement me")
