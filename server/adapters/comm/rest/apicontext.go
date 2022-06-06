@@ -7,10 +7,10 @@ import (
 
 	"github.com/FeatureOn/api/server/application"
 
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/gorilla/mux"
 	"github.com/nicholasjackson/env"
-	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -184,7 +184,7 @@ func createSpan(spanName string, r *http.Request) (span opentracing.Span) {
 }
 
 // ErrInvalidRatingPath is an error message when the Rating path is not valid
-var ErrInvalidRatingPath = fmt.Errorf("Invalid Path, path should be /Details/[id]")
+var ErrInvalidRatingPath = fmt.Errorf("invalid Path, path should be /Details/[id]")
 
 // GenericError is a generic error message returned by a server
 type GenericError struct {

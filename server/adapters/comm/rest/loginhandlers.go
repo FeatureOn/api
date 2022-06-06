@@ -10,7 +10,7 @@ import (
 	"github.com/FeatureOn/api/server/application"
 
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,7 +19,7 @@ type ValidatedLogin struct{}
 // Claims represents the data for a user login
 type Claims struct {
 	UserID  string               `json:"userid"`
-	Payload jwt.RegisteredClaims `json:payload`
+	Payload jwt.RegisteredClaims `json:"payload"`
 }
 
 func (c Claims) Valid() error {
@@ -33,15 +33,15 @@ var hs = []byte(secretKey)
 
 // Login swagger:route POST PUT /user Login
 //
-// Handler to login the user, returns a JWT Token
+// Handler to log in the user, returns a JWT Token
 //
 // Responses:
 //        200: OK
 //		  400: Bad Request
 //		  500: Internal Server Error
-func (ctx *APIContext) Login(w http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) Login(w http.ResponseWriter, r *http.Request) {
 	userLogin := r.Context().Value(ValidatedLogin{}).(dto.LoginRequest)
-	userService := application.NewUserService(ctx.userRepo)
+	userService := application.NewUserService(apiContext.userRepo)
 	user, err := userService.CheckUser(userLogin.UserName, userLogin.Password)
 	if err != nil {
 		respondWithError(w, r, 401, "User not found")
@@ -108,7 +108,7 @@ func checkLogin(r *http.Request) (status bool, httpStatusCode int, claims *Claim
 	token, err := jwt.ParseWithClaims(tokenstring, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return hs, nil
 	})
@@ -130,7 +130,7 @@ func checkLogin(r *http.Request) (status bool, httpStatusCode int, claims *Claim
 //        200: OK
 //		  400: Bad Request
 //		  500: Internal Server Error
-func (ctx *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
 	status, _, claims := checkLogin(r)
 	if status {
 		// We ensure that a new token is not issued until enough time has elapsed
@@ -164,7 +164,7 @@ func (ctx *APIContext) Refresh(w http.ResponseWriter, r *http.Request) {
 }
 
 // MiddlewareValidateLoginRequest Checks the integrity of login information in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateLoginRequest(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateLoginRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		login, err := middleware.ExtractLoginPayload(r)
 		if err != nil {
@@ -172,7 +172,7 @@ func (ctx *APIContext) MiddlewareValidateLoginRequest(next http.Handler) http.Ha
 			return
 		}
 		// validate the login
-		errs := ctx.validation.Validate(login)
+		errs := apiContext.validation.Validate(login)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the login")
 

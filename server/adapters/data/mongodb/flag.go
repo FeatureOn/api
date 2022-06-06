@@ -48,7 +48,7 @@ func (fr FlagRepository) GetFlags(environmentID string) (domain.EnvironmentFlag,
 	return mappers.MapEnvironmentFlagDAO2EnvironmentFlag(envFlagDAO), nil
 }
 
-// UpdateFlag sets new value to a spesific flag
+// UpdateFlag sets new value to a specific flag
 func (fr FlagRepository) UpdateFlag(environmentID string, featureKey string, value bool) error {
 	collection := fr.dbClient.Database(fr.dbName).Collection(viper.GetString("FlagsCollection"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -66,7 +66,7 @@ func (fr FlagRepository) UpdateFlag(environmentID string, featureKey string, val
 	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error updating the flag with environmentID: %s and featureKey: %s", environmentID, featureKey)
-		return errors.New("Error updating the flag")
+		return errors.New("error updating the flag")
 	}
 	return nil
 

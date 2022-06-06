@@ -21,13 +21,13 @@ type validatedUser struct{}
 //	404: errorResponse
 
 // GetUser gets a single user if found
-func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 	// parse the Rating id from the url
 	vars := mux.Vars(r)
 
 	// convert the id into an integer and return
 	id := vars["id"]
-	userService := application.NewUserService(ctx.userRepo)
+	userService := application.NewUserService(apiContext.userRepo)
 	user, err := userService.GetUser(id)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapUser2UserResponse(user))
@@ -41,11 +41,11 @@ func (ctx *APIContext) GetUser(rw http.ResponseWriter, r *http.Request) {
 //	404: errorResponse
 
 // AddUser creates a new user on the system
-func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 	// Get user data from payload
 	userDTO := r.Context().Value(validatedUser{}).(dto.AddUserRequest)
 	user := mappers.MapAddUserRequest2User(userDTO)
-	userService := application.NewUserService(ctx.userRepo)
+	userService := application.NewUserService(apiContext.userRepo)
 	err := userService.AddUser(user)
 	if err == nil {
 		respondWithJSON(rw, r, 200, user)
@@ -53,7 +53,7 @@ func (ctx *APIContext) AddUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 // MiddlewareValidateNewUser Checks the integrity of new user in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		user, err := middleware.ExtractAddUserPayload(r)
 		if err != nil {
@@ -61,7 +61,7 @@ func (ctx *APIContext) MiddlewareValidateNewUser(next http.Handler) http.Handler
 			return
 		}
 		// validate the user
-		errs := ctx.validation.Validate(user)
+		errs := apiContext.validation.Validate(user)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the user")
 

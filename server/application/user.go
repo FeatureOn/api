@@ -58,7 +58,7 @@ func (us UserService) DeleteUser(u domain.User) error {
 	return us.userRepository.DeleteUser(u)
 }
 
-// HashPassword hashes the password string in order to getting ready to store or check if it matches the stored value
+// HashPassword hashes the password string in order to get ready to store or check if it matches the stored value
 func hashPassword(password string) string {
 	h := sha1.New()
 	h.Write([]byte(password))

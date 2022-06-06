@@ -15,7 +15,7 @@ type UpdateUserRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
-// UserResponse type defines a model for returning an user shy of its password
+// UserResponse type defines a model for returning a user shy of its password
 type UserResponse struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`

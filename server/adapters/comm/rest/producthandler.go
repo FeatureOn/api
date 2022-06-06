@@ -6,7 +6,7 @@ import (
 
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
 	"github.com/FeatureOn/api/server/adapters/comm/rest/mappers"
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/FeatureOn/api/server/application"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
@@ -21,13 +21,13 @@ type validatedProduct struct{}
 //	404: errorResponse
 
 // GetProduct gets a single product if found
-func (ctx *APIContext) GetProduct(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) GetProduct(rw http.ResponseWriter, r *http.Request) {
 	// parse the Rating id from the url
 	vars := mux.Vars(r)
 
 	// convert the id into an integer and return
 	id := vars["id"]
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	product, err := productService.GetProduct(id)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapProduct2ProductDetailResponse(product))
@@ -41,8 +41,8 @@ func (ctx *APIContext) GetProduct(rw http.ResponseWriter, r *http.Request) {
 //	404: errorResponse
 
 // GetProducts gets a list of products if found
-func (ctx *APIContext) GetProducts(rw http.ResponseWriter, r *http.Request) {
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+func (apiContext *APIContext) GetProducts(rw http.ResponseWriter, r *http.Request) {
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	products, err := productService.GetProducts()
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapProducts2ProductResponses(products))
@@ -56,11 +56,11 @@ func (ctx *APIContext) GetProducts(rw http.ResponseWriter, r *http.Request) {
 //	404: errorResponse
 
 // AddProduct adds a new product to the system
-func (ctx *APIContext) AddProduct(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) AddProduct(rw http.ResponseWriter, r *http.Request) {
 	// Get product data from payload
 	productDTO := r.Context().Value(validatedProduct{}).(dto.AddProductRequest)
 	//environment := mappers.MapAddEnvironmentRequest2Environment(environmentDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	prodID, err := productService.AddProduct(productDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleProductResponse(prodID, productDTO.Name))
@@ -76,11 +76,11 @@ func (ctx *APIContext) AddProduct(rw http.ResponseWriter, r *http.Request) {
 //	404: errorResponse
 
 // UpdateProduct adds a new product to the system
-func (ctx *APIContext) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 	// Get product data from payload
 	productDTO := r.Context().Value(validatedProduct{}).(dto.UpdateProductRequest)
 	//environment := mappers.MapAddEnvironmentRequest2Environment(environmentDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	err := productService.UpdateProduct(productDTO.ID, productDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleProductResponse(productDTO.ID, productDTO.Name))
@@ -90,7 +90,7 @@ func (ctx *APIContext) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 }
 
 // MiddlewareValidateNewProduct Checks the integrity of new product in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		prod, err := middleware.ExtractAddProductPayload(r)
 		if err != nil {
@@ -98,7 +98,7 @@ func (ctx *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Hand
 			return
 		}
 		// validate the product
-		errs := ctx.validation.Validate(prod)
+		errs := apiContext.validation.Validate(prod)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the product")
 
@@ -117,7 +117,7 @@ func (ctx *APIContext) MiddlewareValidateNewProduct(next http.Handler) http.Hand
 }
 
 // MiddlewareValidateUpdateProduct Checks the integrity of product to be updated in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateUpdateProduct(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateUpdateProduct(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		prod, err := middleware.ExtractUpdateProductPayload(r)
 		if err != nil {
@@ -125,7 +125,7 @@ func (ctx *APIContext) MiddlewareValidateUpdateProduct(next http.Handler) http.H
 			return
 		}
 		// validate the product
-		errs := ctx.validation.Validate(prod)
+		errs := apiContext.validation.Validate(prod)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the product")
 

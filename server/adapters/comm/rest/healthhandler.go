@@ -15,7 +15,7 @@ import (
 //	404: errorResponse
 
 // Live handles GET requests
-func (ctx *APIContext) Live(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) Live(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 }
 
@@ -26,8 +26,8 @@ func (ctx *APIContext) Live(rw http.ResponseWriter, r *http.Request) {
 //	404: errorResponse
 
 // Ready handles GET requests
-func (ctx *APIContext) Ready(rw http.ResponseWriter, r *http.Request) {
-	hs := application.NewHealthService(ctx.healthRepo)
+func (apiContext *APIContext) Ready(rw http.ResponseWriter, r *http.Request) {
+	hs := application.NewHealthService(apiContext.healthRepo)
 	status := hs.Ready()
 	if status == false {
 		log.Error().Msg("Error connecting to database")

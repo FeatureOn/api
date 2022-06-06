@@ -34,12 +34,12 @@ func (ps ProductService) checkProductName(productName string) error {
 		return err
 	}
 	if existingID != "000000000000000000000000" && existingID != "" {
-		return errors.New("The product name is not available")
+		return errors.New("the product name is not available")
 	}
 	return nil
 }
 
-// GetProducts returns a the list of products from the repository injected into ProductService
+// GetProducts returns the list of products from the repository injected into ProductService
 func (ps ProductService) GetProducts() ([]domain.Product, error) {
 	return ps.productRepository.GetProducts()
 }

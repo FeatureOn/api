@@ -20,11 +20,11 @@ func (ps ProductService) AddFeature(productID string, feature domain.Feature) er
 	for _, feat := range product.Features {
 		if feat.Key == feature.Key {
 			log.Info().Msgf("Cannot add new feature, key is not unique: %s", feature.Key)
-			return errors.New("The feature key is not available")
+			return errors.New("the feature key is not available")
 		}
 		if feat.Name == feature.Name {
 			log.Info().Msgf("Cannot add new feature, name is not unique: %s", feature.Name)
-			return errors.New("The feature name is not available")
+			return errors.New("the feature name is not available")
 		}
 	}
 
@@ -46,7 +46,7 @@ func (ps ProductService) AddFeature(productID string, feature domain.Feature) er
 	err = ps.productRepository.AddFeature(product, feature, envflags)
 	if err != nil {
 		log.Error().Err(err).Msg("Error adding a new feature")
-		return errors.New("Error adding a new feature")
+		return errors.New("error adding a new feature")
 	}
 	return nil
 }
@@ -65,7 +65,7 @@ func (ps ProductService) UpdateFeature(productID string, feature domain.Feature)
 	for _, feat := range product.Features {
 		if feat.Name == feature.Name && feat.Key != feature.Key {
 			log.Info().Msgf("Cannot update the feature, name is not unique: %s", feature.Name)
-			return errors.New("The feature name is not available")
+			return errors.New("the feature name is not available")
 		}
 		if feat.Key == feature.Key {
 			found = true
@@ -73,7 +73,7 @@ func (ps ProductService) UpdateFeature(productID string, feature domain.Feature)
 	}
 	if !found {
 		log.Info().Msgf("Cannot find the feature, productID: %s, featureKey: %s", productID, feature.Key)
-		return errors.New("The feature key could not be found")
+		return errors.New("the feature key could not be found")
 	}
 	return ps.productRepository.UpdateFeature(product, feature)
 }

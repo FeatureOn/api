@@ -6,7 +6,7 @@ import (
 
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
 	"github.com/FeatureOn/api/server/adapters/comm/rest/mappers"
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/FeatureOn/api/server/application"
 	"github.com/rs/zerolog/log"
 )
@@ -20,11 +20,11 @@ type validatedFeature struct{}
 //	404: errorResponse
 
 // AddFeature creates a new environment on the system
-func (ctx *APIContext) AddFeature(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) AddFeature(rw http.ResponseWriter, r *http.Request) {
 	// Get environment data from oayload
 	featureDTO := r.Context().Value(validatedFeature{}).(dto.AddFeatureRequest)
 	feature := mappers.MapAddFeatureRequest2Feature(featureDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	err := productService.AddFeature(featureDTO.ProductID, feature)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapFeature2FeatureResponse(feature))
@@ -34,11 +34,11 @@ func (ctx *APIContext) AddFeature(rw http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateFeature creates a new environment on the system
-func (ctx *APIContext) UpdateFeature(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) UpdateFeature(rw http.ResponseWriter, r *http.Request) {
 	// Get environment data from oayload
 	featureDTO := r.Context().Value(validatedFeature{}).(dto.AddFeatureRequest)
 	feature := mappers.MapAddFeatureRequest2Feature(featureDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	err := productService.UpdateFeature(featureDTO.ProductID, feature)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapFeature2FeatureResponse(feature))
@@ -48,7 +48,7 @@ func (ctx *APIContext) UpdateFeature(rw http.ResponseWriter, r *http.Request) {
 }
 
 // MiddlewareValidateNewFeature Checks the integrity of new feature in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateNewFeature(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateNewFeature(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		feat, err := middleware.ExtractAddFeaturePayload(r)
 		if err != nil {
@@ -56,7 +56,7 @@ func (ctx *APIContext) MiddlewareValidateNewFeature(next http.Handler) http.Hand
 			return
 		}
 		// validate the feature
-		errs := ctx.validation.Validate(feat)
+		errs := apiContext.validation.Validate(feat)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the feature")
 

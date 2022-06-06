@@ -12,7 +12,7 @@ services:
     volumes:
       - 'mongodb_master_data:/bitnami'
     ports:
-      - 27017:27017
+      - "27017:27017"
 
   mongodb-secondary:
     image: 'bitnami/mongodb:latest'

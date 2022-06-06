@@ -100,7 +100,7 @@ func (pr ProductRepository) UpdateEnvironment(product domain.Product, environmen
 	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error updating the product with productID: %s", product.ID)
-		return errors.New("Error updating the product")
+		return errors.New("error updating the product")
 	}
 	return nil
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
 	"github.com/FeatureOn/api/server/adapters/comm/rest/mappers"
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/FeatureOn/api/server/application"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
@@ -21,13 +21,13 @@ type validatedFlag struct{}
 //	404: errorResponse
 
 // GetFlags gets all flags within an environment
-func (ctx *APIContext) GetFlags(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) GetFlags(rw http.ResponseWriter, r *http.Request) {
 	// parse the environment id from the url
 	vars := mux.Vars(r)
 
 	// convert the id into an integer and return
 	id := vars["id"]
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	envFlag, err := productService.GetFlags(id)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.MapEnvironmentFlag2EnvironmentFlagResponse(envFlag))
@@ -42,12 +42,12 @@ func (ctx *APIContext) GetFlags(rw http.ResponseWriter, r *http.Request) {
 //	200: OK
 //	404: errorResponse
 
-// UpdateProducUpdateFlagt adds a new product to the system
-func (ctx *APIContext) UpdateFlag(rw http.ResponseWriter, r *http.Request) {
+// UpdateFlag updates an existing flag's value
+func (apiContext *APIContext) UpdateFlag(rw http.ResponseWriter, r *http.Request) {
 	// Get product data from payload
 	updateFlagDTO := r.Context().Value(validatedFlag{}).(dto.UpdateFlagRequest)
 	//environment := mappers.MapAddEnvironmentRequest2Environment(environmentDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	err := productService.UpdateFlagValue(updateFlagDTO.EnvironmentID, updateFlagDTO.FeatureKey, updateFlagDTO.Value)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateFlagResponse(updateFlagDTO.FeatureKey, updateFlagDTO.Value))
@@ -57,7 +57,7 @@ func (ctx *APIContext) UpdateFlag(rw http.ResponseWriter, r *http.Request) {
 }
 
 // MiddlewareValidateUpdateFlag validates the input of UpdateFlagRequest
-func (ctx *APIContext) MiddlewareValidateUpdateFlag(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateUpdateFlag(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		updFlag, err := middleware.ExtractUpdateFlagPayload(r)
 		if err != nil {
@@ -65,7 +65,7 @@ func (ctx *APIContext) MiddlewareValidateUpdateFlag(next http.Handler) http.Hand
 			return
 		}
 		// validate the product
-		errs := ctx.validation.Validate(updFlag)
+		errs := apiContext.validation.Validate(updFlag)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the UpdateFlagRequest")
 

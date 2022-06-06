@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 )
 
@@ -15,7 +15,7 @@ import (
 //	200: OK
 
 // Index returns OK handles GET requests
-func (p *APIContext) Index(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) Index(rw http.ResponseWriter, r *http.Request) {
 	tracer := opentracing.GlobalTracer()
 	spanname := "Toggler.Api.Index"
 	var span opentracing.Span
@@ -45,7 +45,7 @@ func (p *APIContext) Index(rw http.ResponseWriter, r *http.Request) {
 //	200: OK
 
 // Version returns the version info for the service by reading from a static file
-func (p *APIContext) Version(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) Version(rw http.ResponseWriter, r *http.Request) {
 	tracer := opentracing.GlobalTracer()
 	spanname := "Toggler.Api.Version"
 	var span opentracing.Span

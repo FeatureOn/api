@@ -6,7 +6,7 @@ import (
 
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
 	"github.com/FeatureOn/api/server/adapters/comm/rest/mappers"
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 	"github.com/FeatureOn/api/server/application"
 	"github.com/rs/zerolog/log"
 )
@@ -20,11 +20,11 @@ type validatedEnvironment struct{}
 //	404: errorResponse
 
 // AddEnvironment creates a new environment on the system
-func (ctx *APIContext) AddEnvironment(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) AddEnvironment(rw http.ResponseWriter, r *http.Request) {
 	// Get environment data from oayload
 	environmentDTO := r.Context().Value(validatedEnvironment{}).(dto.AddEnvironmentRequest)
 	//environment := mappers.MapAddEnvironmentRequest2Environment(environmentDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	envID, err := productService.AddEnvironment(environmentDTO.ProductID, environmentDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleEnvironmentResponse(envID, environmentDTO.Name))
@@ -34,11 +34,11 @@ func (ctx *APIContext) AddEnvironment(rw http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateEnvironment updates an existing environment on the system
-func (ctx *APIContext) UpdateEnvironment(rw http.ResponseWriter, r *http.Request) {
+func (apiContext *APIContext) UpdateEnvironment(rw http.ResponseWriter, r *http.Request) {
 	// Get environment data from oayload
 	environmentDTO := r.Context().Value(validatedEnvironment{}).(dto.UpdateEnvironmentRequest)
 	//environment := mappers.MapAddEnvironmentRequest2Environment(environmentDTO)
-	productService := application.NewProductService(ctx.productRepo, ctx.flagRepo)
+	productService := application.NewProductService(apiContext.productRepo, apiContext.flagRepo)
 	err := productService.UpdateEnvironment(environmentDTO.ProductID, environmentDTO.EnvironmentID, environmentDTO.Name)
 	if err == nil {
 		respondWithJSON(rw, r, 200, mappers.CreateSimpleEnvironmentResponse(environmentDTO.EnvironmentID, environmentDTO.Name))
@@ -48,7 +48,7 @@ func (ctx *APIContext) UpdateEnvironment(rw http.ResponseWriter, r *http.Request
 }
 
 // MiddlewareValidateNewEnvironment Checks the integrity of new environment in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateNewEnvironment(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateNewEnvironment(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		env, err := middleware.ExtractAddEnvironmentPayload(r)
 		if err != nil {
@@ -56,7 +56,7 @@ func (ctx *APIContext) MiddlewareValidateNewEnvironment(next http.Handler) http.
 			return
 		}
 		// validate the environment
-		errs := ctx.validation.Validate(env)
+		errs := apiContext.validation.Validate(env)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the environment")
 
@@ -75,7 +75,7 @@ func (ctx *APIContext) MiddlewareValidateNewEnvironment(next http.Handler) http.
 }
 
 // MiddlewareValidateUpdateEnvironment Checks the integrity of new environment in the request and calls next if ok
-func (ctx *APIContext) MiddlewareValidateUpdateEnvironment(next http.Handler) http.Handler {
+func (apiContext *APIContext) MiddlewareValidateUpdateEnvironment(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		env, err := middleware.ExtractUpdateEnvironmentPayload(r)
 		if err != nil {
@@ -83,7 +83,7 @@ func (ctx *APIContext) MiddlewareValidateUpdateEnvironment(next http.Handler) ht
 			return
 		}
 		// validate the environment
-		errs := ctx.validation.Validate(env)
+		errs := apiContext.validation.Validate(env)
 		if errs != nil && len(errs) != 0 {
 			log.Error().Err(errs[0]).Msg("Error validating the environment")
 

@@ -29,7 +29,7 @@ func newProductRepository(client *mongo.Client, databaseName string) ProductRepo
 	}
 }
 
-// GetProduct retprns one Product with the given ID if it exists in the array, returns not found error otherwise
+// GetProduct returns one Product with the given ID if it exists in the array, returns not found error otherwise
 func (pr ProductRepository) GetProduct(ID string) (domain.Product, error) {
 	collection := pr.dbClient.Database(pr.dbName).Collection(viper.GetString("ProductsCollection"))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -80,7 +80,7 @@ func (pr ProductRepository) GetProductByName(productName string) (string, error)
 	var productDAO dao.NewProductDAO
 	err := collection.FindOne(ctx, bson.M{"name": productName}, options.FindOne().SetProjection(bson.M{"_id": 1})).Decode(&productDAO)
 	if err != nil && err.Error() != "mongo: no documents in result" {
-		return "", errors.New("Error checking product name authenticity")
+		return "", errors.New("error checking product name authenticity")
 	}
 	return productDAO.ID.Hex(), nil
 }
@@ -98,7 +98,7 @@ func (pr ProductRepository) AddProduct(productName string) (string, error) {
 	_, err := collection.InsertOne(ctx, newProduct)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error adding product with name %s", productName)
-		return "", errors.New("Error adding product")
+		return "", errors.New("error adding product")
 	}
 	return newProdID.Hex(), nil
 
@@ -121,7 +121,7 @@ func (pr ProductRepository) UpdateProduct(productID string, productName string) 
 	_, err = collection.UpdateOne(ctx, idDoc, upDoc, &updateOpts)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error updating the product with productID: %s", productID)
-		return errors.New("Error updating the product")
+		return errors.New("error updating the product")
 	}
 	return nil
 }

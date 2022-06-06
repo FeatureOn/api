@@ -18,7 +18,7 @@ package rest
 
 import (
 	"github.com/FeatureOn/api/server/adapters/comm/rest/dto"
-	middleware "github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
+	"github.com/FeatureOn/api/server/adapters/comm/rest/middleware"
 )
 
 //

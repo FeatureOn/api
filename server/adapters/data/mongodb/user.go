@@ -62,7 +62,7 @@ func (ur UserRepository) AddUser(u domain.User) error {
 	return err
 }
 
-// CheckUser checks the username & password if if matches any user frim the array
+// CheckUser checks the username & password if it matches any user from the array
 func (ur UserRepository) CheckUser(username string, password string) (domain.User, error) {
 	collection := ur.dbClient.Database(ur.dbName).Collection(viper.GetString("UsersCollection")) ///ToDo: Change static string to configuration value
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -78,10 +78,10 @@ func (ur UserRepository) CheckUser(username string, password string) (domain.Use
 
 // UpdateUser updates an existing user on the user array
 func (ur UserRepository) UpdateUser(u domain.User) error {
-	return fmt.Errorf("Not impelemented")
+	return fmt.Errorf("not impelemented")
 }
 
 // DeleteUser deletes a user from the user array
 func (ur UserRepository) DeleteUser(u domain.User) error {
-	return fmt.Errorf("Not impelemented")
+	return fmt.Errorf("not impelemented")
 }
