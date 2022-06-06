@@ -1,7 +1,6 @@
 package application
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/FeatureOn/api/server/domain"
@@ -69,14 +68,4 @@ func (mfr mockFlagRepository) UpdateFlag(environmentID string, featureKey string
 func TestNewProductServiceSuccess(t *testing.T) {
 	ps := NewProductService(mockProductRepository{}, mockFlagRepository{})
 	assert.NotNil(t, ps)
-}
-
-func TestGetProductByNameSuccess(t *testing.T) {
-	ps := NewProductService(mockProductRepository{}, mockFlagRepository{})
-	getProductByNameFunc = func(productName string) (string, error) {
-		return fmt.Sprintf("the success message: %s", productName), nil
-	}
-	result, err := ps.productRepository.GetProductByName("testing")
-	assert.Nil(t, err)
-	assert.Equal(t, result, "the success message: testing")
 }
