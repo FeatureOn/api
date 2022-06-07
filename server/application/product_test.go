@@ -102,11 +102,30 @@ func TestGetProduct(t *testing.T) {
 	assert.Equal(t, domain.Product{}, result)
 	assert.EqualError(t, err, "some kind of database provider error while getting the product")
 	// Check what happens when underlying database provider returns a product
-	mockproduct := mocker.GenerateMockProduct()
+	mockproduct := mocker.GenerateMockProduct(true, true)
 	getProductFunc = func(id string) (domain.Product, error) {
 		return mockproduct, nil
 	}
 	result, err = ps.GetProduct("abc-def")
 	assert.Equal(t, mockproduct, result)
+	assert.Nil(t, err)
+}
+
+func TestGetProducts(t *testing.T) {
+	ps := NewProductService(mockProductRepository{}, mockFlagRepository{})
+	// Check what happens when underlying database provider returns an error
+	getProductsFunc = func() ([]domain.Product, error) {
+		return nil, errors.New("some kind of database provider error while getting the product")
+	}
+	result, err := ps.GetProducts()
+	assert.Nil(t, result)
+	assert.EqualError(t, err, "some kind of database provider error while getting the product")
+	// Check what happens when underlying database provider returns a product
+	mockProducts := mocker.GenerateMockProductSlice()
+	getProductsFunc = func() ([]domain.Product, error) {
+		return mockProducts, nil
+	}
+	result, err = ps.GetProducts()
+	assert.Equal(t, mockProducts, result)
 	assert.Nil(t, err)
 }

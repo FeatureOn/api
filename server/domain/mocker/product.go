@@ -27,18 +27,22 @@ func GenerateMockEnvironment() domain.Environment {
 }
 
 // GenerateMockProduct generates a Product with totally random data
-func GenerateMockProduct() domain.Product {
+func GenerateMockProduct(haveEnvironment, haveFeature bool) domain.Product {
 	product := domain.Product{
-		ID:           generateUUID(),
-		Name:         generateString(50),
-		Features:     make([]domain.Feature, generateCount()),
-		Environments: make([]domain.Environment, generateCount()),
+		ID:   generateUUID(),
+		Name: generateString(50),
 	}
-	for i := 0; i < len(product.Features); i++ {
-		product.Features[i] = GenerateMockFeature()
+	if haveFeature {
+		product.Features = make([]domain.Feature, generateCount())
+		for i := 0; i < len(product.Features); i++ {
+			product.Features[i] = GenerateMockFeature()
+		}
 	}
-	for i := 0; i < len(product.Environments); i++ {
-		product.Environments[i] = GenerateMockEnvironment()
+	if haveEnvironment {
+		product.Environments = make([]domain.Environment, generateCount())
+		for i := 0; i < len(product.Environments); i++ {
+			product.Environments[i] = GenerateMockEnvironment()
+		}
 	}
 	return product
 }
@@ -47,7 +51,7 @@ func GenerateMockProduct() domain.Product {
 func GenerateMockProductSlice() []domain.Product {
 	products := make([]domain.Product, generateCount())
 	for i := 0; i < len(products); i++ {
-		products[i] = GenerateMockProduct()
+		products[i] = GenerateMockProduct(false, false)
 	}
 	return products
 }
@@ -77,6 +81,6 @@ func generateBool() bool {
 
 func generateCount() int {
 	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(5)
+	return rand.Intn(4) + 1
 
 }
