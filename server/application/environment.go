@@ -37,8 +37,6 @@ func (ps ProductService) AddEnvironment(productID string, environmentName string
 		log.Error().Err(err).Msg("Error adding new environment")
 		return "", errors.New("error adding new environment")
 	}
-
-	//ps.flagRepository.AddFlag(environmentID, feat.Key, feat.DefaultState)
 	return environmentID, nil
 }
 
@@ -52,11 +50,19 @@ func (ps ProductService) UpdateEnvironment(productID string, environmentID strin
 		return err
 	}
 	// Check the environment name is not in use
+	found := false
 	for _, env := range product.Environments {
-		if env.Name == environmentName {
+		if env.Name == environmentName && env.ID != environmentID {
 			log.Info().Msgf("Cannot add new environment, name is not unique: %s", environmentName)
 			return errors.New("the environment name is not available")
 		}
+		if env.ID == environmentID {
+			found = true
+		}
+	}
+	if !found {
+		log.Info().Msgf("Cannot find the environment, productID: %s, environmentID: %s", productID, environmentID)
+		return errors.New("the environment id could not be found")
 	}
 	return ps.productRepository.UpdateEnvironment(product, environmentID, environmentName)
 }
